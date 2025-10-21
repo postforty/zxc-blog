@@ -14,3 +14,9 @@ export interface Comment {
   content: string;
   createdAt: string;
 }
+
+export interface VisitorStats {
+  dailyVisitors: number;
+  totalVisitors: number;
+  lastVisitDate: string; // ISO 8601 format (YYYY-MM-DD)
+}

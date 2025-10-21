@@ -57,7 +57,9 @@ src
 │   ├── common/
 │   │   ├── Header.tsx
 │   │   ├── Footer.tsx
-│   │   └── Layout.tsx (Header, Footer 등을 포함하는 공통 레이아웃)
+│   │   ├── Layout.tsx (Header, Footer 등을 포함하는 공통 레이아웃)
+│   │   └── language/
+│   │       └── LanguageSwitcher.tsx (언어 선택 UI)
 │   └── posts/
 │       ├── PostList.tsx
 │       ├── PostListItem.tsx
@@ -66,6 +68,8 @@ src
 │   └── comments/
 │       ├── CommentList.tsx
 │       └── CommentForm.tsx
+│   └── analytics/
+│       └── VisitorCounter.tsx (방문자 수를 표시하는 컴포넌트)
 └── pages/
     ├── HomePage.tsx (게시물 목록)
     ├── PostDetailPage.tsx (게시물 상세)
@@ -85,3 +89,23 @@ src
 *   **HomePage:** `PostList`를 포함하는 메인 페이지.
 *   **PostDetailPage:** `PostView`와 `CommentList`, `CommentForm`을 포함하는 상세 페이지.
 *   **EditorPage:** `PostEditor`를 포함하는 작성/수정 페이지.
+
+## 4. 방문자 통계 모듈
+
+*   **목표:** 블로그의 일일 방문자 수와 전체 방문자 수를 추적하고 표시합니다.
+*   **데이터 저장:** `localStorage`를 사용하여 `dailyVisitors` (일일 방문자 수), `totalVisitors` (전체 방문자 수), `lastVisitDate` (마지막 방문 날짜)를 저장합니다.
+*   **로직:**
+    *   페이지 로드 시 `localStorage`에서 방문자 데이터를 읽어옵니다.
+    *   `lastVisitDate`와 현재 날짜를 비교하여 날짜가 다르면 `dailyVisitors`를 0으로 초기화하고 `lastVisitDate`를 업데이트합니다.
+    *   `dailyVisitors`와 `totalVisitors`를 1씩 증가시킵니다.
+    *   업데이트된 방문자 데이터를 `localStorage`에 저장합니다.
+*   **통합:** `Layout` 컴포넌트 또는 `Footer` 컴포넌트에 `VisitorCounter.tsx` 컴포넌트를 통합하여 방문자 수를 표시합니다.
+
+## 5. 다국어 지원 모듈
+
+*   **목표:** 블로그 콘텐츠와 UI를 여러 언어로 제공하여 사용자 경험을 향상시킵니다.
+*   **라이브러리:** `react-i18next` 및 `i18next`를 사용하여 다국어 기능을 구현합니다.
+*   **번역 파일:** `public/locales/{lang}/translation.json` 경로에 언어별 번역 파일을 저장합니다. (예: `public/locales/en/translation.json`, `public/locales/ko/translation.json`)
+*   **언어 감지 및 저장:** 사용자의 브라우저 언어를 감지하고, 사용자가 선택한 언어를 `localStorage`에 저장하여 유지합니다.
+*   **언어 전환:** `LanguageSwitcher.tsx` 컴포넌트를 통해 사용자가 언어를 쉽게 변경할 수 있도록 합니다.
+*   **통합:** `Header` 또는 `Layout` 컴포넌트에 `LanguageSwitcher.tsx`를 통합하고, 필요한 텍스트에 `useTranslation` 훅을 적용합니다.
