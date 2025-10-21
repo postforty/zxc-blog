@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePosts } from '@/contexts/PostContext';
-import { Post } from './PostList';
+import { Post } from '@/types';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 
 interface PostEditorProps {
   post?: Post;
@@ -35,31 +39,27 @@ export default function PostEditor({ post }: PostEditorProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <label htmlFor="title" className="block text-sm font-medium mb-2">제목</label>
-        <input
+      <div className="grid w-full items-center gap-1.5">
+        <Label htmlFor="title">제목</Label>
+        <Input
           type="text"
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full p-2 border rounded-md bg-transparent"
           required
         />
       </div>
-      <div>
-        <label htmlFor="content" className="block text-sm font-medium mb-2">내용 (Markdown 지원)</label>
-        <textarea
+      <div className="grid w-full gap-1.5">
+        <Label htmlFor="content">내용 (Markdown 지원)</Label>
+        <Textarea
           id="content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="w-full p-2 border rounded-md bg-transparent"
           rows={15}
           required
         />
       </div>
-      <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-        저장
-      </button>
+      <Button type="submit">저장</Button>
     </form>
   );
 }

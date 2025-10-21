@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ModeToggle } from "./mode-toggle";
+import { Button } from "@/components/ui/button";
 
 export default function Header() {
   return (
@@ -7,7 +8,9 @@ export default function Header() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <Link to="/" className="text-2xl font-bold hover:no-underline">My Blog</Link>
         <div className="flex items-center gap-4">
-          <Link to="/editor" className="text-sm font-medium hover:underline">새 글 작성</Link>
+          <Button asChild variant="ghost">
+            <Link to="/editor">새 글 작성</Link>
+          </Button>
           <ModeToggle />
         </div>
       </div>

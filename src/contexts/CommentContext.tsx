@@ -1,13 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import initialComments from '@/data/comments.json';
-
-export interface Comment {
-  id: string;
-  postId: string;
-  author: string;
-  content: string;
-  createdAt: string;
-}
+import { Comment } from '@/types';
 
 interface CommentContextType {
   getComments: (postId: string) => Comment[];
