@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { usePosts } from '@/contexts/PostContext';
 import { Post } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ interface PostEditorProps {
 }
 
 export default function PostEditor({ post }: PostEditorProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const { addPost, updatePost } = usePosts();
@@ -40,7 +42,7 @@ export default function PostEditor({ post }: PostEditorProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid w-full items-center gap-1.5">
-        <Label htmlFor="title">제목</Label>
+        <Label htmlFor="title">{t('title')}</Label>
         <Input
           type="text"
           id="title"
@@ -50,7 +52,7 @@ export default function PostEditor({ post }: PostEditorProps) {
         />
       </div>
       <div className="grid w-full gap-1.5">
-        <Label htmlFor="content">내용 (Markdown 지원)</Label>
+        <Label htmlFor="content">{t('content_markdown_supported')}</Label>
         <Textarea
           id="content"
           value={content}
@@ -59,7 +61,7 @@ export default function PostEditor({ post }: PostEditorProps) {
           required
         />
       </div>
-      <Button type="submit">저장</Button>
+      <Button type="submit">{t('save')}</Button>
     </form>
   );
 }

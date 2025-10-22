@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useComments } from '@/contexts/CommentContext';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,6 +9,7 @@ interface CommentFormProps {
 }
 
 export default function CommentForm({ postId }: CommentFormProps) {
+  const { t } = useTranslation();
   const [content, setContent] = useState('');
   const { addComment } = useComments();
 
@@ -26,16 +28,16 @@ export default function CommentForm({ postId }: CommentFormProps) {
 
   return (
     <section className="mt-8">
-      <h3 className="text-xl font-bold mb-4">댓글 작성</h3>
+      <h3 className="text-xl font-bold mb-4">{t('write_comment')}</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
           rows={4}
-          placeholder="댓글을 입력하세요..."
+          placeholder={t('comment_placeholder')}
           required
         />
-        <Button type="submit">등록</Button>
+        <Button type="submit">{t('submit_comment')}</Button>
       </form>
     </section>
   );

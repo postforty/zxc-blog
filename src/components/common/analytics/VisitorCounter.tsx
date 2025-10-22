@@ -1,12 +1,14 @@
+import { useTranslation } from 'react-i18next';
 import { useVisitorStats } from '@/hooks/useVisitorStats';
 
 export default function VisitorCounter() {
+  const { t } = useTranslation();
   const stats = useVisitorStats();
 
   return (
     <div className="text-sm text-muted-foreground flex gap-4">
-      <span>오늘 방문자: {stats.dailyVisitors}</span>
-      <span>전체 방문자: {stats.totalVisitors}</span>
+      <span>{t('today_visitors')}: {stats.dailyVisitors}</span>
+      <span>{t('total_visitors')}: {stats.totalVisitors}</span>
     </div>
   );
 }

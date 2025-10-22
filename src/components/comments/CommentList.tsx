@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useComments } from "@/contexts/CommentContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
@@ -7,12 +8,13 @@ interface CommentListProps {
 }
 
 export default function CommentList({ postId }: CommentListProps) {
+  const { t } = useTranslation();
   const { getComments } = useComments();
   const comments = getComments(postId);
 
   return (
     <section className="mt-12">
-      <h3 className="text-2xl font-bold mb-6">댓글 ({comments.length})</h3>
+      <h3 className="text-2xl font-bold mb-6">{t('comments_heading', { count: comments.length })}</h3>
       <div className="space-y-6">
         {comments.map((comment, index) => (
           <div key={comment.id}>
@@ -29,7 +31,7 @@ export default function CommentList({ postId }: CommentListProps) {
             {index < comments.length - 1 && <Separator className="my-6" />}
           </div>
         ))}
-        {comments.length === 0 && <p className="text-muted-foreground">아직 댓글이 없습니다.</p>}
+        {comments.length === 0 && <p className="text-muted-foreground">{t('no_comments_yet')}</p>}
       </div>
     </section>
   );

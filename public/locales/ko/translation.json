@@ -1,0 +1,21 @@
+{
+  "greeting": "블로그에 오신 것을 환영합니다!",
+  "new_post": "새 글 작성",
+  "posts_heading": "게시물",
+  "post_not_found": "게시물을 찾을 수 없습니다.",
+  "edit": "수정",
+  "delete": "삭제",
+  "delete_confirm_message": "정말로 이 게시물을 삭제하시겠습니까?",
+  "comments_heading": "댓글 ({{count}})",
+  "no_comments_yet": "아직 댓글이 없습니다.",
+  "write_comment": "댓글 작성",
+  "comment_placeholder": "댓글을 입력하세요...",
+  "submit_comment": "등록",
+  "edit_post": "게시물 수정",
+  "write_new_post": "새 게시물 작성",
+  "title": "제목",
+  "content_markdown_supported": "내용 (마크다운 지원)",
+  "save": "저장",
+  "today_visitors": "오늘 방문자",
+  "total_visitors": "전체 방문자"
+}
