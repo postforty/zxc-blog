@@ -4,7 +4,7 @@ import { Comment } from '@/types';
 
 interface CommentContextType {
   getComments: (postId: string) => Comment[];
-  addComment: (comment: Omit<Comment, 'id' | 'createdAt'>) => void;
+  addComment: (comment: Omit<Comment, 'id' | 'createdAt'> & { parentId?: string }) => void;
 }
 
 const CommentContext = createContext<CommentContextType | undefined>(undefined);
@@ -13,12 +13,36 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
   const [comments, setComments] = useState<Comment[]>(initialComments as Comment[]);
 
   const getComments = (postId: string) => {
-    return comments
-      .filter(c => c.postId === postId)
-      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    const postComments = comments.filter(c => c.postId === postId);
+
+    const commentMap = new Map<string, Comment>();
+    postComments.forEach(comment => {
+      commentMap.set(comment.id, { ...comment, replies: [] }); // replies 배열 초기화
+    });
+
+    const rootComments: Comment[] = [];
+    commentMap.forEach(comment => {
+      if (comment.parentId) {
+        const parent = commentMap.get(comment.parentId);
+        if (parent) {
+          parent.replies?.push(comment);
+        }
+      } else {
+        rootComments.push(comment);
+      }
+    });
+
+    // 각 댓글의 replies 배열을 생성일 기준으로 정렬
+    commentMap.forEach(comment => {
+      if (comment.replies) {
+        comment.replies.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      }
+    });
+
+    return rootComments.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   };
 
-  const addComment = (comment: Omit<Comment, 'id' | 'createdAt'>) => {
+  const addComment = (comment: Omit<Comment, 'id' | 'createdAt'> & { parentId?: string }) => {
     const newComment: Comment = {
       ...comment,
       id: `comment-${Date.now()}`,

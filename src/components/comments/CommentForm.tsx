@@ -6,9 +6,11 @@ import { Textarea } from '@/components/ui/textarea';
 
 interface CommentFormProps {
   postId: string;
+  parentId?: string; // 대댓글 작성을 위한 부모 댓글 ID
+  onCommentAdded?: () => void; // 댓글 추가 후 호출될 콜백
 }
 
-export default function CommentForm({ postId }: CommentFormProps) {
+export default function CommentForm({ postId, parentId, onCommentAdded }: CommentFormProps) {
   const { t } = useTranslation();
   const [content, setContent] = useState('');
   const { addComment } = useComments();
@@ -21,9 +23,13 @@ export default function CommentForm({ postId }: CommentFormProps) {
       postId,
       author: 'Guest', // TODO: Implement user authentication
       content,
+      parentId, // parentId 전달
     });
 
     setContent('');
+    if (onCommentAdded) {
+      onCommentAdded();
+    }
   };
 
   return (
