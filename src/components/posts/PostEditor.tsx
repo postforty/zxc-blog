@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface PostEditorProps {
   post?: Post;
@@ -58,14 +59,14 @@ export default function PostEditor({ post }: PostEditorProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="flex gap-4 mb-4">
+      <div className="flex gap-4 mb-4 items-center">
         <Label>{t('language')}</Label>
         <div className="flex items-center gap-2">
-          <Input type="checkbox" id="lang-ko" checked={selectedLangs.includes('ko')} onChange={() => handleLangChange('ko')} />
+          <Checkbox id="lang-ko" checked={selectedLangs.includes('ko')} onCheckedChange={() => handleLangChange('ko')} />
           <Label htmlFor="lang-ko">{t('korean')}</Label>
         </div>
         <div className="flex items-center gap-2">
-          <Input type="checkbox" id="lang-en" checked={selectedLangs.includes('en')} onChange={() => handleLangChange('en')} />
+          <Checkbox id="lang-en" checked={selectedLangs.includes('en')} onCheckedChange={() => handleLangChange('en')} />
           <Label htmlFor="lang-en">{t('english')}</Label>
         </div>
       </div>
