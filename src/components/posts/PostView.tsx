@@ -1,4 +1,5 @@
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Post } from "@/types";
@@ -40,7 +41,7 @@ export default function PostView({ post }: PostViewProps) {
           <button onClick={handleDelete} className="px-4 py-2 border rounded-md text-sm bg-red-600 text-white hover:bg-red-700">{t('delete')}</button>
         </div>
       </div>
-      <ReactMarkdown>{content}</ReactMarkdown>
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
       <div className="flex justify-center mt-8">
         <button onClick={handleLike} className="flex items-center gap-2 px-4 py-2 border rounded-md text-sm">
           <span>❤️</span>
