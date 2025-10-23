@@ -1,10 +1,20 @@
 export interface Post {
   id: string;
-  title: string;
+  title: {
+    en: string;
+    ko: string;
+  };
   author: string;
   createdAt: string;
-  summary?: string;
-  content: string;
+  summary?: {
+    en: string;
+    ko: string;
+  };
+  content: {
+    en: string;
+    ko: string;
+  };
+  likes: number;
 }
 
 export interface Comment {

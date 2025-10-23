@@ -18,5 +18,8 @@
   "save": "Save",
   "today_visitors": "Today's Visitors",
   "total_visitors": "Total Visitors",
-  "reply": "Reply"
+  "reply": "Reply",
+  "language": "Language",
+  "korean": "Korean",
+  "english": "English"
 }
