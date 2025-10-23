@@ -8,6 +8,7 @@ export default function VisitorCounter() {
   return (
     <div className="text-sm text-muted-foreground flex gap-4">
       <span>{t('today_visitors')}: {stats.dailyVisitors}</span>
+      <span>{t('yesterday_visitors')}: {stats.yesterdayVisitors}</span>
       <span>{t('total_visitors')}: {stats.totalVisitors}</span>
     </div>
   );
