@@ -15,6 +15,7 @@ export interface Post {
     ko: string;
   };
   likes: number;
+  tags: string[];
 }
 
 export interface Comment {
