@@ -18,6 +18,12 @@ export default function Header() {
           <Button onClick={() => changeLanguage('en')}>English</Button>
           <Button onClick={() => changeLanguage('ko')}>한국어</Button>
           <Button asChild variant="ghost">
+            <Link to="/profile">Profile</Link>
+          </Button>
+          <Button asChild variant="ghost">
+            <Link to="/admin">Admin</Link>
+          </Button>
+          <Button asChild variant="ghost">
             <Link to="/editor">{t('new_post')}</Link>
           </Button>
           <ModeToggle />

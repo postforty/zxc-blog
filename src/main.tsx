@@ -11,6 +11,13 @@ import Layout from './components/common/Layout'
 import HomePage from './pages/HomePage'
 import PostDetailPage from './pages/PostDetailPage'
 import EditorPage from './pages/EditorPage'
+import ProfilePage from './pages/ProfilePage'
+import AdminLayout from './components/common/AdminLayout'
+import DashboardPage from './pages/admin/DashboardPage'
+import PostManagementPage from './pages/admin/PostManagementPage'
+import CommentManagementPage from './pages/admin/CommentManagementPage'
+import UserManagementPage from './pages/admin/UserManagementPage'
+import SettingsPage from './pages/admin/SettingsPage'
 
 const router = createBrowserRouter([
   {
@@ -21,6 +28,18 @@ const router = createBrowserRouter([
       { path: 'posts/:id', element: <PostDetailPage /> },
       { path: 'editor', element: <EditorPage /> },
       { path: 'editor/:id', element: <EditorPage /> },
+      { path: 'profile', element: <ProfilePage /> },
+    ]
+  },
+  {
+    path: '/admin',
+    element: <AdminLayout />,
+    children: [
+      { index: true, element: <DashboardPage /> },
+      { path: 'posts', element: <PostManagementPage /> },
+      { path: 'comments', element: <CommentManagementPage /> },
+      { path: 'users', element: <UserManagementPage /> },
+      { path: 'settings', element: <SettingsPage /> },
     ]
   }
 ])
