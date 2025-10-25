@@ -4,6 +4,7 @@ import { useComments } from "@/contexts/CommentContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Comment } from "@/types";
 import CommentForm from "./CommentForm";
 
@@ -18,7 +19,17 @@ interface CommentItemProps {
 
 const CommentItem = ({ comment, onReply }: CommentItemProps) => {
   const { t } = useTranslation();
+  const { updateComment } = useComments();
   const [showReplyForm, setShowReplyForm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedContent, setEditedContent] = useState(comment.content);
+
+  const handleUpdate = () => {
+    if (editedContent.trim() !== comment.content) {
+      updateComment(comment.id, editedContent.trim());
+    }
+    setIsEditing(false);
+  };
 
   return (
     <div className="flex items-start gap-4">
@@ -28,10 +39,31 @@ const CommentItem = ({ comment, onReply }: CommentItemProps) => {
       <div className="flex-1">
         <p className="font-semibold">{comment.author}</p>
         <p className="text-sm text-muted-foreground mb-2">{new Date(comment.createdAt).toLocaleString()}</p>
-        <p className="prose dark:prose-invert">{comment.content}</p>
-        <Button variant="link" size="sm" onClick={() => setShowReplyForm(!showReplyForm)} className="pl-0">
-          {t('reply')}
-        </Button>
+        {isEditing ? (
+          <div className="space-y-2">
+            <Textarea
+              value={editedContent}
+              onChange={(e) => setEditedContent(e.target.value)}
+              rows={3}
+            />
+            <div className="flex gap-2">
+              <Button size="sm" onClick={handleUpdate}>{t('save')}</Button>
+              <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>{t('cancel')}</Button>
+            </div>
+          </div>
+        ) : (
+          <p className="prose dark:prose-invert">{comment.content}</p>
+        )}
+        {!isEditing && (
+          <div className="flex gap-2">
+            <Button variant="link" size="sm" onClick={() => setShowReplyForm(!showReplyForm)} className="pl-0">
+              {t('reply')}
+            </Button>
+            <Button variant="link" size="sm" onClick={() => setIsEditing(true)} className="pl-0">
+              {t('edit')}
+            </Button>
+          </div>
+        )}
         {showReplyForm && (
           <div className="mt-4 ml-4">
             <CommentForm postId={comment.postId} parentId={comment.id} onCommentAdded={() => setShowReplyForm(false)} />
@@ -61,7 +93,7 @@ export default function CommentList({ postId }: CommentListProps) {
         {comments.map((comment, index) => (
           <div key={comment.id}>
             <CommentItem comment={comment} onReply={() => {}} />
-            {index < comments.length - 1 && <Separator className="my-6" />}
+            {index < comments.length - 1 && <Separator className="my-6" />} 
           </div>
         ))}
         {comments.length === 0 && <p className="text-muted-foreground">{t('no_comments_yet')}</p>}

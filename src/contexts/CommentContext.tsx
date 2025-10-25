@@ -5,6 +5,7 @@ import { Comment } from '@/types';
 interface CommentContextType {
   getComments: (postId: string) => Comment[];
   addComment: (comment: Omit<Comment, 'id' | 'createdAt'> & { parentId?: string }) => void;
+  updateComment: (commentId: string, content: string) => void;
 }
 
 const CommentContext = createContext<CommentContextType | undefined>(undefined);
@@ -51,8 +52,14 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
     setComments(prevComments => [...prevComments, newComment]);
   };
 
+  const updateComment = (commentId: string, content: string) => {
+    setComments(prevComments =>
+      prevComments.map(c => (c.id === commentId ? { ...c, content } : c))
+    );
+  };
+
   return (
-    <CommentContext.Provider value={{ getComments, addComment }}>
+    <CommentContext.Provider value={{ getComments, addComment, updateComment }}>
       {children}
     </CommentContext.Provider>
   );
