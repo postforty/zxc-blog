@@ -13,7 +13,6 @@ export default function HomePage() {
 
   return (
     <section>
-      <h2 className="text-3xl font-bold mb-8">{t('posts_heading')}</h2>
       <div className="mb-8 max-w-md">
         <Input
           type="text"

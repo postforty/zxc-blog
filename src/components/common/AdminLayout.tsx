@@ -1,5 +1,6 @@
 
 import { NavLink, Outlet } from 'react-router-dom';
+import { Home } from 'lucide-react';
 
 const AdminLayout = () => {
   return (
@@ -18,7 +19,10 @@ const AdminLayout = () => {
           </ul>
         </nav>
         <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-          <NavLink to="/" className="block p-4 hover:bg-gray-200 dark:hover:bg-gray-700">Go to Blog</NavLink>
+          <NavLink to="/" className="flex items-center gap-2 p-4 hover:bg-gray-200 dark:hover:bg-gray-700">
+            <Home className="h-4 w-4" />
+            Go to Blog
+          </NavLink>
         </div>
       </aside>
       <main className="flex-1 p-8 overflow-y-auto">

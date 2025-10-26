@@ -16,6 +16,7 @@ export interface Post {
   };
   likes: number;
   tags: string[];
+  viewCount: number;
 }
 
 export interface Comment {

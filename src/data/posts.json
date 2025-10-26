@@ -16,7 +16,8 @@
       "en": "## What is React?\n\nReact is a JavaScript library for building user interfaces. It uses a component-based architecture to easily create reusable UI."
     },
     "likes": 15,
-    "tags": ["React", "Vite", "TypeScript"]
+    "tags": ["React", "Vite", "TypeScript"],
+    "viewCount": 1200
   },
   {
     "id": "understanding-tailwind-css",
@@ -35,7 +36,8 @@
       "en": "## Utility-First Approach\n\nTailwind CSS uses a utility-first approach where styles are applied by adding predefined utility classes directly to the HTML."
     },
     "likes": 22,
-    "tags": ["TailwindCSS", "CSS", "Utility-First"]
+    "tags": ["TailwindCSS", "CSS", "Utility-First"],
+    "viewCount": 800
   },
   {
     "id": "dark-mode-in-react",
@@ -54,7 +56,8 @@
       "en": "## Why Dark Mode?\n\nDark mode reduces eye strain and improves readability in certain environments. It is also a trendy feature in modern apps."
     },
     "likes": 30,
-    "tags": ["React", "TailwindCSS", "Dark Mode"]
+    "tags": ["React", "TailwindCSS", "Dark Mode"],
+    "viewCount": 1500
   },
   {
     "id": "getting-started-with-nodejs",
@@ -73,7 +76,8 @@
       "en": "Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine."
     },
     "likes": 45,
-    "tags": ["Node.js", "Express", "JavaScript"]
+    "tags": ["Node.js", "Express", "JavaScript"],
+    "viewCount": 2000
   },
   {
     "id": "introduction-to-typescript",
@@ -92,7 +96,8 @@
       "en": "TypeScript is a language that adds types to JavaScript."
     },
     "likes": 38,
-    "tags": ["TypeScript", "JavaScript"]
+    "tags": ["TypeScript", "JavaScript"],
+    "viewCount": 950
   },
   {
     "id": "state-management-with-zustand",
@@ -111,7 +116,8 @@
       "en": "Zustand is very simple compared to other state management libraries like Redux or MobX."
     },
     "likes": 25,
-    "tags": ["React", "Zustand", "State Management"]
+    "tags": ["React", "Zustand", "State Management"],
+    "viewCount": 70
   },
   {
     "id": "react-testing-library-basics",
@@ -130,7 +136,8 @@
       "en": "React Testing Library encourages testing components from the user's perspective."
     },
     "likes": 18,
-    "tags": ["React", "Testing", "React Testing Library"]
+    "tags": ["React", "Testing", "React Testing Library"],
+    "viewCount": 50
   },
   {
     "id": "css-in-js-with-styled-components",
@@ -149,7 +156,8 @@
       "en": "styled-components is a popular library for component-based styling."
     },
     "likes": 28,
-    "tags": ["React", "CSS-in-JS", "styled-components"]
+    "tags": ["React", "CSS-in-JS", "styled-components"],
+    "viewCount": 1100
   },
   {
     "id": "building-a-rest-api-with-express",
@@ -168,7 +176,8 @@
       "en": "REST APIs are an important part of web services."
     },
     "likes": 55,
-    "tags": ["Node.js", "Express", "API", "REST"]
+    "tags": ["Node.js", "Express", "API", "REST"],
+    "viewCount": 3000
   },
   {
     "id": "introduction-to-graphql",
@@ -187,6 +196,7 @@
       "en": "GraphQL is a query language for APIs."
     },
     "likes": 42,
-    "tags": ["GraphQL", "API"]
+    "tags": ["GraphQL", "API"],
+    "viewCount": 1800
   }
 ]

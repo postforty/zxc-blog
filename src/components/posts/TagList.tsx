@@ -1,5 +1,5 @@
 import { usePosts } from "@/contexts/PostContext";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface TagListProps {
   selectedTag: string | null;
@@ -12,20 +12,13 @@ export default function TagList({ selectedTag, setSelectedTag }: TagListProps) {
 
   return (
     <div className="flex flex-wrap gap-2 mb-8">
-      <Button
-        variant={selectedTag === null ? "default" : "outline"}
-        onClick={() => setSelectedTag(null)}
-      >
-        All
-      </Button>
+      <button onClick={() => setSelectedTag(null)} className="cursor-pointer">
+        <Badge variant={selectedTag === null ? "default" : "outline"}>All</Badge>
+      </button>
       {allTags.map(tag => (
-        <Button
-          key={tag}
-          variant={selectedTag === tag ? "default" : "outline"}
-          onClick={() => setSelectedTag(tag)}
-        >
-          {tag}
-        </Button>
+        <button key={tag} onClick={() => setSelectedTag(tag)} className="cursor-pointer">
+          <Badge variant={selectedTag === tag ? "default" : "outline"}>{tag}</Badge>
+        </button>
       ))}
     </div>
   );

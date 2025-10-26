@@ -4,7 +4,7 @@ import { Post } from '@/types';
 
 interface PostContextType {
   posts: Post[];
-  addPost: (post: Omit<Post, 'id' | 'createdAt' | 'likes'>) => void;
+  addPost: (post: Omit<Post, 'id' | 'createdAt' | 'likes' | 'viewCount'>) => void;
   updatePost: (post: Post) => void;
   deletePost: (id: string) => void;
   addLike: (id: string) => void;
@@ -15,12 +15,13 @@ const PostContext = createContext<PostContextType | undefined>(undefined);
 export const PostProvider = ({ children }: { children: ReactNode }) => {
   const [posts, setPosts] = useState<Post[]>(initialPosts as Post[]);
 
-  const addPost = (post: Omit<Post, 'id' | 'createdAt' | 'likes'>) => {
+  const addPost = (post: Omit<Post, 'id' | 'createdAt' | 'likes' | 'viewCount'>) => {
     const newPost: Post = {
       ...post,
       id: `new-post-${Date.now()}`,
       createdAt: new Date().toISOString(),
       likes: 0,
+      viewCount: 0,
     };
     setPosts(prevPosts => [newPost, ...prevPosts]);
   };
@@ -49,7 +50,6 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
     </PostContext.Provider>
   );
 };
-
 export const usePosts = () => {
   const context = useContext(PostContext);
   if (!context) {
