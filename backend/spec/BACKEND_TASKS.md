@@ -32,10 +32,10 @@
 
 ## 3. Zod 유효성 검사 (Phase 3: Validation)
 
-- [ ] 공유 가능한 `zod` 스키마 디렉토리/파일 구조 설정
-- [ ] 인증 관련 API(회원가입, 로그인)에 대한 `zod` 스키마 작성
-- [ ] `validateRequest` 미들웨어 구현
-- [ ] 모든 API 엔드포인트에 유효성 검사 미들웨어 적용
+- [x] 공유 가능한 `zod` 스키마 디렉토리/파일 구조 설정
+- [x] 인증 관련 API(회원가입, 로그인)에 대한 `zod` 스키마 작성
+- [x] `validateRequest` 미들웨어 구현
+- [x] 모든 API 엔드포인트에 유효성 검사 미들웨어 적용
 
 ## 4. Google OAuth 구현 (Phase 4: Google OAuth)
 
