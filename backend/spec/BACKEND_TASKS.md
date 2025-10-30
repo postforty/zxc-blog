@@ -39,10 +39,10 @@
 
 ## 4. Google OAuth 구현 (Phase 4: Google OAuth)
 
-- [ ] `src/config/passport.ts` 파일 생성 및 Passport Google 전략 설정
-- [ ] **Google 로그인 시작 API** (`GET /api/auth/google`) 구현
-- [ ] **Google 콜백 API** (`GET /api/auth/google/callback`) 구현
-- [ ] 콜백에서 사용자 조회 또는 생성 후 JWT 발급 로직 연동
+- [x] `src/config/passport.ts` 파일 생성 및 Passport Google 전략 설정
+- [x] **Google 로그인 시작 API** (`GET /api/auth/google`) 구현
+- [x] **Google 콜백 API** (`GET /api/auth/google/callback`) 구현
+- [x] 콜백에서 사용자 조회 또는 생성 후 JWT 발급 로직 연동
 
 ## 5. 핵심 기능 구현 (Phase 5: Core Features)
 
