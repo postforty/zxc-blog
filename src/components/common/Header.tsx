@@ -11,48 +11,51 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import zxcvbLogo from "@/assets/zxcvb_logo_t.png";
+import zxcvbLogoLight from "@/assets/zxcvb_logo_light.png";
+import zxcvbLogoDark from "@/assets/zxcvb_logo_dark.png";
 
 export default function Header() {
   const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
   };
 
   return (
-    <header className="py-2 border-b mb-8">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+    <header className="py-2 mb-8 border-b">
+      <div className="container flex items-center justify-between px-4 mx-auto sm:px-6 lg:px-8">
         <Link to="/" className="text-2xl font-bold hover:no-underline">
           <div className="flex items-center gap-2">
             <div className="h-16 overflow-hidden">
               <img
-                src={zxcvbLogo}
+                src={theme === "dark" ? zxcvbLogoDark : zxcvbLogoLight}
                 alt="zxcvb blog logo"
-                className="w-full h-full object-cover object-center"
+                className="object-cover object-center w-full h-full"
               />
             </div>
-            <div className="rotate-[-10deg] origin-bottom-left"><span className="text-sm">log</span></div>
+            <div className="rotate-[-10deg] origin-bottom-left">
+              <span className="text-sm">log</span>
+            </div>
           </div>
         </Link>
-        <div className="hidden sm:flex items-center gap-4">
+        <div className="items-center hidden gap-4 sm:flex">
           <Button asChild variant="ghost">
             <Link to="/profile">
-              <User className="mr-2 h-4 w-4" />
+              <User className="w-4 h-4 mr-2" />
               Profile
             </Link>
           </Button>
           <Button asChild variant="ghost">
             <Link to="/admin">
-              <Settings className="mr-2 h-4 w-4" />
+              <Settings className="w-4 h-4 mr-2" />
               Admin
             </Link>
           </Button>
           <Button asChild variant="ghost">
             <Link to="/editor">
-              <PlusSquare className="mr-2 h-4 w-4" />
+              <PlusSquare className="w-4 h-4 mr-2" />
               {t("new_post")}
             </Link>
           </Button>
@@ -75,28 +78,87 @@ export default function Header() {
           <ModeToggle />
         </div>
         <div className="sm:hidden">
-          <Button variant="ghost" size="icon" onClick={() => setIsOpen(!isOpen)}>
-            <Menu className="h-6 w-6" />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <Menu className="w-6 h-6" />
             <span className="sr-only">Toggle menu</span>
           </Button>
         </div>
       </div>
       {isOpen && (
-        <div className="sm:hidden fixed inset-0 bg-background z-50 flex flex-col items-center justify-center gap-6">
-          <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="absolute top-4 right-4">
-            <X className="h-6 w-6" />
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 sm:hidden bg-background">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsOpen(false)}
+            className="absolute top-4 right-4"
+          >
+            <X className="w-6 h-6" />
             <span className="sr-only">Close menu</span>
           </Button>
-          <Link to="/profile" onClick={() => setIsOpen(false)} className="text-2xl">Profile</Link>
-          <Link to="/admin" onClick={() => setIsOpen(false)} className="text-2xl">Admin</Link>
-          <Link to="/editor" onClick={() => setIsOpen(false)} className="text-2xl">{t("new_post")}</Link>
+          <Link
+            to="/profile"
+            onClick={() => setIsOpen(false)}
+            className="text-2xl"
+          >
+            Profile
+          </Link>
+          <Link
+            to="/admin"
+            onClick={() => setIsOpen(false)}
+            className="text-2xl"
+          >
+            Admin
+          </Link>
+          <Link
+            to="/editor"
+            onClick={() => setIsOpen(false)}
+            className="text-2xl"
+          >
+            {t("new_post")}
+          </Link>
           <div className="flex gap-4">
-            <Button variant="ghost" onClick={() => { changeLanguage('en'); setIsOpen(false); }}>English</Button>
-            <Button variant="ghost" onClick={() => { changeLanguage('ko'); setIsOpen(false); }}>한국어</Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                changeLanguage("en");
+                setIsOpen(false);
+              }}
+            >
+              English
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                changeLanguage("ko");
+                setIsOpen(false);
+              }}
+            >
+              한국어
+            </Button>
           </div>
           <div className="flex gap-4">
-            <Button variant="ghost" onClick={() => { setTheme('light'); setIsOpen(false); }}>Light</Button>
-            <Button variant="ghost" onClick={() => { setTheme('dark'); setIsOpen(false); }}>Dark</Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setTheme("light");
+                setIsOpen(false);
+              }}
+            >
+              Light
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setTheme("dark");
+                setIsOpen(false);
+              }}
+            >
+              Dark
+            </Button>
           </div>
         </div>
       )}
