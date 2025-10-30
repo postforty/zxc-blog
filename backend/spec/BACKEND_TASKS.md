@@ -21,14 +21,14 @@
 
 ## 2. 인증 및 인가 구현 (Phase 2: Auth & RBAC)
 
-- [ ] `src/api/auth` 라우트 및 컨트롤러 파일 생성
-- [ ] `bcryptjs`를 이용한 비밀번호 해싱 로직 구현
-- [ ] **회원가입 API** (`POST /api/auth/register`) 구현
-- [ ] **로그인 API** (`POST /api/auth/login`) 구현 (JWT Access/Refresh Token 발급)
-- [ ] **토큰 재발급 API** (`POST /api/auth/refresh`) 구현
-- [ ] **로그아웃 API** (`POST /api/auth/logout`) 구현 (Refresh Token 무효화)
-- [ ] `verifyToken` 미들웨어 구현 (Access Token 유효성 검증)
-- [ ] `checkRole` 미들웨어 구현 (사용자 역할 기반 접근 제어)
+- [x] `src/api/auth` 라우트 및 컨트롤러 파일 생성
+- [x] `bcryptjs`를 이용한 비밀번호 해싱 로직 구현
+- [x] **회원가입 API** (`POST /api/auth/register`) 구현
+- [x] **로그인 API** (`POST /api/auth/login`) 구현 (JWT Access/Refresh Token 발급)
+- [x] **토큰 재발급 API** (`POST /api/auth/refresh`) 구현
+- [x] **로그아웃 API** (`POST /api/auth/logout`) 구현 (Refresh Token 무효화)
+- [x] `verifyToken` 미들웨어 구현 (Access Token 유효성 검증)
+- [x] `checkRole` 미들웨어 구현 (사용자 역할 기반 접근 제어)
 
 ## 3. Zod 유효성 검사 (Phase 3: Validation)
 
