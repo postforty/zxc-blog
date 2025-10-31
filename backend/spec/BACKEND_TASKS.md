@@ -46,11 +46,11 @@
 
 ## 5. 핵심 기능 구현 (Phase 5: Core Features)
 
-- [ ] **게시물(Post) API** (`/api/posts`) - `Admin` 전용 CRUD 구현
-- [ ] **댓글(Comment) API** (`/api/posts/:postId/comments`, `/api/comments/:id`) 구현
-    - [ ] `GET`, `POST` (로그인 사용자)
-    - [ ] `PUT`, `DELETE` (자신의 댓글만)
-- [ ] **좋아요(Like) API** (`POST /api/posts/:id/like`) 구현 (`Guest` 포함 모든 사용자)
+- [x] **게시물(Post) API** (`/api/posts`) - `Admin` 전용 CRUD 구현
+- [x] **댓글(Comment) API** (`/api/posts/:postId/comments`, `/api/comments/:id`) 구현
+    - [x] `GET`, `POST` (로그인 사용자)
+    - [x] `PUT`, `DELETE` (자신의 댓글만)
+- [x] **좋아요(Like) API** (`POST /api/posts/:id/like`) 구현 (`Guest` 포함 모든 사용자)
 
 ## 6. 관리자 기능 구현 (Phase 6: Admin Features)
 

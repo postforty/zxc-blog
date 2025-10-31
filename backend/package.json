@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/app.ts"
+    "dev": "tsx watch src/app.ts",
+    "docs:generate": "node generate-spec.js",
+    "docs:build": "redoc-cli bundle dist/openapi.json -o dist/redoc.html"
   },
   "keywords": [],
   "author": "",
@@ -36,6 +38,8 @@
     "@types/pg": "^8.15.5",
     "nodemon": "^3.1.10",
     "prisma": "^6.18.0",
+    "redoc-cli": "^0.13.21",
+    "swagger-jsdoc": "^6.2.8",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }

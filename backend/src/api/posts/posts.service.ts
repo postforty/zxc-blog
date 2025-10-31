@@ -1,7 +1,28 @@
 
 import { PrismaClient } from '@prisma/client';
+import type { z } from 'zod';
+import type { createPostSchema, updatePostSchema } from '../../zod/posts.schema.js';
 
 const prisma = new PrismaClient();
+
+export const createPost = async (postData: z.infer<typeof createPostSchema>) => {
+  return prisma.post.create({
+    data: postData,
+  });
+};
+
+export const updatePost = async (id: number, postData: z.infer<typeof updatePostSchema>) => {
+  return prisma.post.update({
+    where: { id },
+    data: postData,
+  });
+};
+
+export const deletePost = async (id: number) => {
+  return prisma.post.delete({
+    where: { id },
+  });
+};
 
 export const getAllPosts = async () => {
   return prisma.post.findMany({
