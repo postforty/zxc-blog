@@ -56,6 +56,14 @@ model Tag {
   posts Post[] @relation("PostTags")
 }
 
+model Setting {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 enum Role {
   User
   Admin

@@ -6,6 +6,7 @@ import passport from './config/passport.js';
 import authRouter from './api/auth/index.js';
 import postsRouter from './api/posts/index.js';
 import commentsRouter from './api/comments/index.js';
+import adminRouter from './api/admin/index.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -28,6 +29,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/posts', postsRouter);
 app.use('/api/posts/:postId/comments', commentsRouter);
 app.use('/api/comments', commentsRouter);
+app.use('/api/admin', adminRouter);
 
 app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok' });

@@ -54,12 +54,12 @@
 
 ## 6. 관리자 기능 구현 (Phase 6: Admin Features)
 
-- [ ] **사용자 관리 API** (`/api/admin/users`) 구현
-- [ ] **프로필/설정 관리 API** (`/api/admin/profile`, `/api/admin/settings`) 구현
-- [ ] **통계 API** (`/api/admin/stats/*`) 구현
-    - [ ] `summary` (주요 지표 요약)
-    - [ ] `top-viewed`, `top-liked` (인기 게시물)
-    - [ ] `visitors` (방문자 추이)
+- [x] **사용자 관리 API** (`/api/admin/users`) 구현
+- [x] **프로필/설정 관리 API** (`/api/admin/profile`, `/api/admin/settings`) 구현
+- [x] **통계 API** (`/api/admin/stats/*`) 구현
+    - [x] `summary` (주요 지표 요약)
+    - [x] `top-viewed`, `top-liked` (인기 게시물)
+    - [ ] `visitors` (방문자 추이) - *현재 프론트엔드에서 LocalStorage 기반으로 구현되어 있어, 백엔드 구현을 위해서는 별도의 방문자 추적 모델 필요*
 
 ## 7. 마무리 (Phase 7: Finalization)
 
