@@ -1,7 +1,7 @@
-
 import { Router } from 'express';
 import { findAll, findOne, create, update, remove } from './posts.controller.js';
-import { like, unlike } from './likes.controller.js';
+import { toggle } from './likes.controller.js';
+import { optionalAuth } from '../../middleware/optionalAuth.js';
 import { verifyToken } from '../../middleware/verifyToken.js';
 import { checkRole } from '../../middleware/checkRole.js';
 import { validateRequest } from '../../middleware/validateRequest.js';
@@ -74,7 +74,7 @@ router.get('/:id', findOne);
 router.post(
   '/',
   verifyToken,
-  checkRole('Admin'),
+  checkRole(['Admin']),
   validateRequest({ body: createPostSchema }),
   create
 );
@@ -147,7 +147,7 @@ router.delete('/:id', verifyToken, checkRole('Admin'), remove);
  * @swagger
  * /api/posts/{id}/like:
  *   post:
- *     summary: Like a post
+ *     summary: Toggle like on a post
  *     tags: [Posts]
  *     security:
  *       - bearerAuth: []
@@ -158,43 +158,26 @@ router.delete('/:id', verifyToken, checkRole('Admin'), remove);
  *         schema:
  *           type: integer
  *     responses:
- *       201:
- *         description: Successfully liked a post
+ *       200:
+ *         description: Successfully toggled like on a post
  *       401:
  *         description: Unauthorized
  *       404:
  *         description: Post not found
  */
-router.post('/:id/like', verifyToken, like);
-
-/**
- * @swagger
- * /api/posts/{id}/like:
- *   delete:
- *     summary: Unlike a post
- *     tags: [Posts]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       204:
- *         description: Successfully unliked a post
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: Post not found
- */
-router.delete('/:id/like', verifyToken, unlike);
+router.post('/:id/like', optionalAuth, toggle);
 
 /**
  * @swagger
  * components:
  *   schemas:
+ *     I18nString:
+ *       type: object
+ *       properties:
+ *         ko:
+ *           type: string
+ *         en:
+ *           type: string
  *     CreatePost:
  *       type: object
  *       required:
@@ -203,9 +186,11 @@ router.delete('/:id/like', verifyToken, unlike);
  *         - authorId
  *       properties:
  *         title:
- *           type: string
+ *           $ref: '#/components/schemas/I18nString'
  *         content:
- *           type: string
+ *           $ref: '#/components/schemas/I18nString'
+ *         summary:
+ *           $ref: '#/components/schemas/I18nString'
  *         authorId:
  *           type: integer
  *         published:
@@ -214,9 +199,11 @@ router.delete('/:id/like', verifyToken, unlike);
  *       type: object
  *       properties:
  *         title:
- *           type: string
+ *           $ref: '#/components/schemas/I18nString'
  *         content:
- *           type: string
+ *           $ref: '#/components/schemas/I18nString'
+ *         summary:
+ *           $ref: '#/components/schemas/I18nString'
  *         published:
  *           type: boolean
  *   securitySchemes:

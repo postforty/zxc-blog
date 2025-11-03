@@ -21,6 +21,7 @@ model User {
   createdAt    DateTime  @default(now())
   posts        Post[]
   comments     Comment[]
+  likes        Like[]
 }
 
 model Post {
@@ -30,11 +31,13 @@ model Post {
   title     Json
   summary   Json?
   content   Json
-  likes     Int       @default(0)
+  published Boolean   @default(false)
+  likeCount Int       @default(0)
   viewCount Int       @default(0)
   createdAt DateTime  @default(now())
   comments  Comment[]
   tags      Tag[]     @relation("PostTags")
+  likes     Like[]
 }
 
 model Comment {
@@ -54,6 +57,16 @@ model Tag {
   id    Int    @id @default(autoincrement())
   name  String @unique
   posts Post[] @relation("PostTags")
+}
+
+model Like {
+  post     Post @relation(fields: [postId], references: [id])
+  postId   Int
+  user     User @relation(fields: [userId], references: [id])
+  userId   Int
+  createdAt DateTime @default(now())
+
+  @@id([postId, userId])
 }
 
 model Setting {

@@ -1,6 +1,7 @@
 
 import type { Request, Response } from 'express';
 import * as postService from './posts.service.js';
+import { Prisma } from '@prisma/client';
 
 export const create = async (req: Request, res: Response) => {
   try {
@@ -8,6 +9,18 @@ export const create = async (req: Request, res: Response) => {
     res.status(201).json(newPost);
   } catch (error) {
     console.error(error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2002') {
+        return res.status(409).json({
+          error: 'There is a unique constraint violation, a new post cannot be created with this title',
+        });
+      }
+      if (error.code === 'P2025') {
+        return res.status(404).json({
+          error: 'The author for this post was not found.',
+        });
+      }
+    }
     res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -22,6 +35,11 @@ export const update = async (req: Request, res: Response) => {
     res.json(updatedPost);
   } catch (error) {
     console.error(error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2025') {
+        return res.status(404).json({ error: 'Post not found' });
+      }
+    }
     res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -41,6 +59,7 @@ export const remove = async (req: Request, res: Response) => {
 };
 
 export const findAll = async (req: Request, res: Response) => {
+  console.log('findAll function in posts.controller.ts called');
   try {
     const posts = await postService.getAllPosts();
     res.json(posts);

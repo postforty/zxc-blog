@@ -9,18 +9,18 @@ import * as statsController from './stats.controller.js';
 const router = Router();
 
 // User management routes
-router.get('/users', verifyToken, checkRole(['ADMIN']), usersController.getAllUsers);
-router.get('/users/:id', verifyToken, checkRole(['ADMIN']), usersController.getUserById);
-router.put('/users/:id', verifyToken, checkRole(['ADMIN']), usersController.updateUser);
-router.delete('/users/:id', verifyToken, checkRole(['ADMIN']), usersController.deleteUser);
+router.get('/users', verifyToken, checkRole(['Admin']), usersController.getAllUsers);
+router.get('/users/:id', verifyToken, checkRole(['Admin']), usersController.getUserById);
+router.put('/users/:id', verifyToken, checkRole(['Admin']), usersController.updateUser);
+router.delete('/users/:id', verifyToken, checkRole(['Admin']), usersController.deleteUser);
 
 // Settings routes
-router.get('/settings', verifyToken, checkRole(['ADMIN']), settingsController.getSettings);
-router.put('/settings', verifyToken, checkRole(['ADMIN']), settingsController.updateSettings);
+router.get('/settings', verifyToken, checkRole(['Admin']), settingsController.getSettings);
+router.put('/settings', verifyToken, checkRole(['Admin']), settingsController.updateSettings);
 
 // Stats routes
-router.get('/stats/summary', verifyToken, checkRole(['ADMIN']), statsController.getSummary);
-router.get('/stats/top-viewed', verifyToken, checkRole(['ADMIN']), statsController.getTopViewedPosts);
-router.get('/stats/top-liked', verifyToken, checkRole(['ADMIN']), statsController.getTopLikedPosts);
+router.get('/stats/summary', verifyToken, checkRole(['Admin']), statsController.getSummary);
+router.get('/stats/top-viewed', verifyToken, checkRole(['Admin']), statsController.getTopViewedPosts);
+router.get('/stats/top-liked', verifyToken, checkRole(['Admin']), statsController.getTopLikedPosts);
 
 export default router;

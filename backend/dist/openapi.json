@@ -116,6 +116,17 @@
           }
         }
       },
+      "I18nString": {
+        "type": "object",
+        "properties": {
+          "ko": {
+            "type": "string"
+          },
+          "en": {
+            "type": "string"
+          }
+        }
+      },
       "CreatePost": {
         "type": "object",
         "required": [
@@ -125,10 +136,13 @@
         ],
         "properties": {
           "title": {
-            "type": "string"
+            "$ref": "#/components/schemas/I18nString"
           },
           "content": {
-            "type": "string"
+            "$ref": "#/components/schemas/I18nString"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/I18nString"
           },
           "authorId": {
             "type": "integer"
@@ -142,10 +156,13 @@
         "type": "object",
         "properties": {
           "title": {
-            "type": "string"
+            "$ref": "#/components/schemas/I18nString"
           },
           "content": {
-            "type": "string"
+            "$ref": "#/components/schemas/I18nString"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/I18nString"
           },
           "published": {
             "type": "boolean"
