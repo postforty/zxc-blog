@@ -19,8 +19,15 @@ export const updatePost = async (id: number, postData: z.infer<typeof updatePost
 };
 
 export const deletePost = async (id: number) => {
-  return prisma.post.delete({
-    where: { id },
+  return prisma.$transaction(async (prisma) => {
+    // Delete all likes associated with the post
+    await prisma.like.deleteMany({
+      where: { postId: id },
+    });
+    // Then delete the post
+    return prisma.post.delete({
+      where: { id },
+    });
   });
 };
 
