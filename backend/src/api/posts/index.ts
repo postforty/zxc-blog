@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { findAll, findOne, create, update, remove } from './posts.controller.js';
+import { findAll, findOne, create, update, remove, getAllTags } from './posts.controller.js';
 import { toggle } from './likes.controller.js';
 import { optionalAuth } from '../../middleware/optionalAuth.js';
 import { verifyToken } from '../../middleware/verifyToken.js';
@@ -28,6 +28,18 @@ const router = Router();
  *         description: A list of posts
  */
 router.get('/', findAll);
+
+/**
+ * @swagger
+ * /api/tags:
+ *   get:
+ *     summary: Retrieve a list of all unique tags
+ *     tags: [Posts]
+ *     responses:
+ *       200:
+ *         description: A list of unique tags
+ */
+router.get('/tags', getAllTags);
 
 /**
  * @swagger

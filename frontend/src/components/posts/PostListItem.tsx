@@ -43,7 +43,7 @@ export default function PostListItem({ post }: PostListItemProps) {
         <div className="flex justify-between w-full">
           <div className="text-muted-foreground">
             {post.tags.map(tag => (
-              <Badge key={tag} variant="outline" className="mr-1">{tag}</Badge>
+              <Badge key={tag.id} variant="outline" className="mr-1">{tag.name}</Badge>
             ))}
           </div>
           <div className="flex items-center gap-1 text-muted-foreground">

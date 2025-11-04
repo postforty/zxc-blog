@@ -98,3 +98,12 @@ export const getPostById = async (id: number) => {
     },
   });
 };
+
+export const getAllTags = async () => {
+  return prisma.tag.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+};

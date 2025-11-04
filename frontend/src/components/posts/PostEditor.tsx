@@ -40,6 +40,7 @@ export default function PostEditor({ post }: PostEditorProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const parsedTags = tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
     const postData = {
       title,
       content,
@@ -48,6 +49,7 @@ export default function PostEditor({ post }: PostEditorProps) {
         ko: content.ko.substring(0, 100),
         en: content.en.substring(0, 100),
       },
+      tags: parsedTags,
     };
 
     if (post) {

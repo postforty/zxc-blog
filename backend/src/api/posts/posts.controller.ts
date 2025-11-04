@@ -85,3 +85,13 @@ export const findOne = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export const getAllTags = async (req: Request, res: Response) => {
+  try {
+    const tags = await postService.getAllTags();
+    res.json(tags);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};

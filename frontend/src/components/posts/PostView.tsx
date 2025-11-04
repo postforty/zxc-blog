@@ -36,7 +36,7 @@ export default function PostView({ post }: PostViewProps) {
       <h1 className="text-4xl font-bold mb-4">{title}</h1>
       <div className="flex justify-between items-center mb-8">
         <div className="flex gap-4 items-center text-sm text-gray-500">
-          <span>{post.author}</span> &middot; <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+          <span>{post.author.name}</span> &middot; <span>{new Date(post.createdAt).toLocaleDateString()}</span>
           <Badge variant="outline" className="flex items-center gap-1">
             <Eye className="h-4 w-4" />
             {post.viewCount}
