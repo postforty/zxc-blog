@@ -19,7 +19,7 @@ export default function PostList({ selectedTag, searchQuery }: PostListProps) {
     let filtered = [...posts].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     if (selectedTag) {
-      filtered = filtered.filter(post => post.tags.includes(selectedTag));
+      filtered = filtered.filter(post => post.tags.some(tag => tag.name === selectedTag));
     }
 
     if (searchQuery) {

@@ -15,4 +15,5 @@ export const updatePostSchema = z.object({
   content: z.any().optional(),
   published: z.boolean().optional(),
   summary: z.any().optional(),
+  tags: z.array(z.string()).optional(),
 });

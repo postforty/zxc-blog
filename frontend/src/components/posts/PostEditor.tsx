@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
 
 interface PostEditorProps {
   post?: Post;
@@ -17,7 +18,8 @@ export default function PostEditor({ post }: PostEditorProps) {
   const { t } = useTranslation();
   const [title, setTitle] = useState({ ko: '', en: '' });
   const [content, setContent] = useState({ ko: '', en: '' });
-  const [tags, setTags] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [currentTagInput, setCurrentTagInput] = useState('');
   const [selectedLangs, setSelectedLangs] = useState(['ko']);
   const { addPost, updatePost } = usePosts();
   const navigate = useNavigate();
@@ -26,7 +28,7 @@ export default function PostEditor({ post }: PostEditorProps) {
     if (post) {
       setTitle(post.title);
       setContent(post.content);
-      setTags(post.tags.map(t => t.name).join(', '));
+      setTags(post.tags.map(t => t.name));
     }
   }, [post]);
 
@@ -38,9 +40,23 @@ export default function PostEditor({ post }: PostEditorProps) {
     }
   };
 
+  const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const newTag = currentTagInput.trim();
+      if (newTag && !tags.includes(newTag)) {
+        setTags([...tags, newTag]);
+      }
+      setCurrentTagInput('');
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setTags(tags.filter(tag => tag !== tagToRemove));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const parsedTags = tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
     const postData = {
       title,
       content,
@@ -49,7 +65,7 @@ export default function PostEditor({ post }: PostEditorProps) {
         ko: content.ko.substring(0, 100),
         en: content.en.substring(0, 100),
       },
-      tags: parsedTags,
+      tags,
     };
 
     if (post) {
@@ -134,10 +150,21 @@ export default function PostEditor({ post }: PostEditorProps) {
         <Input
           type="text"
           id="tags"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
+          value={currentTagInput}
+          onChange={(e) => setCurrentTagInput(e.target.value)}
+          onKeyDown={handleAddTag}
           placeholder={t('tags_placeholder')}
         />
+        <div className="flex flex-wrap gap-2 mt-2">
+          {tags.map((tag) => (
+            <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+              {tag}
+              <button type="button" onClick={() => handleRemoveTag(tag)} className="ml-1 text-xs text-gray-500 hover:text-gray-700">
+                x
+              </button>
+            </Badge>
+          ))}
+        </div>
       </div>
 
       <Button type="submit">{t('save')}</Button>

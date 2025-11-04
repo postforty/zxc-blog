@@ -48,9 +48,83 @@ export const createPost = async (postData: z.infer<typeof createPostSchema>) => 
 };
 
 export const updatePost = async (id: number, postData: z.infer<typeof updatePostSchema>) => {
-  return prisma.post.update({
-    where: { id },
-    data: postData,
+  const { tags, ...restOfPostData } = postData;
+
+  return prisma.$transaction(async (prisma) => {
+    // Update post data
+    const updatedPost = await prisma.post.update({
+      where: { id },
+      data: restOfPostData,
+    });
+
+    // Handle tags
+    if (tags !== undefined) {
+      if (tags.length > 0) {
+        const tagOperations = tags.map(tagName => {
+          return prisma.tag.upsert({
+            where: { name: tagName },
+            update: {},
+            create: { name: tagName },
+          });
+        });
+
+        const createdOrFoundTags = await Promise.all(tagOperations);
+
+        console.log('Updating post relations:');
+        console.log('Post ID:', id);
+        console.log('Tags received:', tags);
+        console.log('Created or found tags:', createdOrFoundTags);
+
+        try {
+          await prisma.post.update({
+            where: { id },
+            data: {
+              tags: {
+                set: createdOrFoundTags.map(tag => ({ id: tag.id })),
+              },
+            },
+          });
+          console.log('Post tags relation update successful for Post ID:', id);
+        } catch (tagUpdateError) {
+          console.error('Error updating post tags relation for Post ID:', id, tagUpdateError);
+          throw tagUpdateError; // Re-throw to ensure transaction rollback
+        }
+      } else { // This is the 'else' for if (tags.length > 0)
+        // If no tags are provided, disconnect all existing tags
+        await prisma.post.update({
+          where: { id },
+          data: {
+            tags: { set: [] },
+          },
+        });
+      }
+    } // This brace closes the if (tags !== undefined) block
+
+    // After successfully updating post tags, clean up orphan tags
+    const allTags = await prisma.tag.findMany({
+      include: {
+        posts: {
+          select: { id: true }, // Only need to know if there are any posts
+        },
+      },
+    });
+
+    for (const tag of allTags) {
+      if (tag.posts.length === 0) {
+        await prisma.tag.delete({
+          where: { id: tag.id },
+        });
+        console.log(`Deleted orphan tag: ${tag.name} (ID: ${tag.id})`);
+      }
+    }
+
+    return prisma.post.findUnique({
+      where: { id },
+      include: {
+        author: true,
+        tags: true,
+      },
+    });
   });
 };
 
