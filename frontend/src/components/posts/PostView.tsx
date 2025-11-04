@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Post } from "@/types";
 import { usePosts } from '@/contexts/PostContext';
+import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
 import { Badge } from "@/components/ui/badge";
 import { Eye, Heart } from "lucide-react";
 
@@ -14,6 +15,7 @@ interface PostViewProps {
 export default function PostView({ post }: PostViewProps) {
   const { t, i18n } = useTranslation();
   const { deletePost, addLike } = usePosts();
+  const { user } = useAuth(); // Get user from useAuth
   const navigate = useNavigate();
 
   const lang = i18n.language.startsWith('ko') ? 'ko' : 'en';
@@ -31,6 +33,8 @@ export default function PostView({ post }: PostViewProps) {
     addLike(post.id);
   };
 
+  const isAdmin = user && user.role === 'Admin'; // Check if user is admin
+
   return (
     <article className="prose dark:prose-invert max-w-none">
       <h1 className="text-4xl font-bold mb-4">{title}</h1>
@@ -42,10 +46,18 @@ export default function PostView({ post }: PostViewProps) {
             {post.viewCount}
           </Badge>
         </div>
-        <div className="flex gap-4 items-center">
-          <Link to={`/editor/${post.id}`} className="px-4 py-2 border rounded-md text-sm">{t('edit')}</Link>
-          <button onClick={handleDelete} className="px-4 py-2 border rounded-md text-sm bg-red-600 text-white hover:bg-red-700">{t('delete')}</button>
-        </div>
+        {isAdmin && ( // Conditionally render edit/delete buttons
+          <div className="flex gap-4 items-center">
+            <Link to={`/editor/${post.id}`} className="px-4 py-2 border rounded-md text-sm">{t('edit')}</Link>
+            <button onClick={handleDelete} className="px-4 py-2 border rounded-md text-sm bg-red-600 text-white hover:bg-red-700">{t('delete')}</button>
+          </div>
+        )}
+      </div>
+      {/* Add this section to display tags */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {post.tags.map(tag => (
+          <Badge key={tag.id} variant="secondary">{tag.name}</Badge>
+        ))}
       </div>
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
       <div className="flex justify-center mt-8">
