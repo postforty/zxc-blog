@@ -145,7 +145,12 @@ export const getUserById = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id, 10);
-    const { name, role } = req.body;
+    const { name } = req.body;
+    let { role } = req.body; // Make it mutable
+
+    if (role && typeof role === 'string') {
+      role = role.toUpperCase(); // Normalize to uppercase
+    }
 
     if (role && role !== 'USER' && role !== 'ADMIN') {
       return res.status(400).json({ message: 'Invalid role' });

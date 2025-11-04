@@ -7,17 +7,13 @@ export const getSummary = async () => {
   const totalPosts = await prisma.post.count();
   const totalComments = await prisma.comment.count();
   const totalUsers = await prisma.user.count();
-  const totalLikes = await prisma.post.aggregate({
-    _sum: {
-      likes: true,
-    },
-  });
+  const totalLikes = await prisma.like.count();
 
   return {
     totalPosts,
     totalComments,
     totalUsers,
-    totalLikes: totalLikes._sum.likes || 0,
+    totalLikes,
   };
 };
 
@@ -38,13 +34,13 @@ export const getTopViewedPosts = async () => {
 export const getTopLikedPosts = async () => {
   return prisma.post.findMany({
     orderBy: {
-      likes: 'desc',
+      likeCount: 'desc',
     },
     take: 5,
     select: {
       id: true,
       title: true,
-      likes: true,
+      likeCount: true,
     },
   });
 };

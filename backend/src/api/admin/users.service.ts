@@ -1,5 +1,5 @@
 // backend/src/api/admin/users.service.ts
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -11,7 +11,6 @@ export const getAllUsers = async () => {
       name: true,
       role: true,
       createdAt: true,
-      updatedAt: true,
     },
   });
 };
@@ -25,22 +24,34 @@ export const getUserById = async (id: number) => {
       name: true,
       role: true,
       createdAt: true,
-      updatedAt: true,
     },
   });
 };
 
 export const updateUser = async (id: number, data: { name?: string; role?: 'USER' | 'ADMIN' }) => {
+  const { name, role } = data;
+  const updateData: { name?: string; role?: Role } = {};
+
+  if (name !== undefined) {
+    updateData.name = name;
+  }
+  if (role !== undefined) {
+    if (role === 'USER') {
+      updateData.role = Role.User;
+    } else if (role === 'ADMIN') {
+      updateData.role = Role.Admin;
+    }
+  }
+
   return prisma.user.update({
     where: { id },
-    data,
+    data: updateData,
     select: {
       id: true,
       email: true,
       name: true,
       role: true,
       createdAt: true,
-      updatedAt: true,
     },
   });
 };
