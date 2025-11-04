@@ -4,7 +4,7 @@ export interface Post {
     en: string;
     ko: string;
   };
-  author: string;
+  author: any;
   createdAt: string;
   summary?: {
     en: string;
@@ -34,4 +34,11 @@ export interface VisitorStats {
   totalVisitors: number;
   yesterdayVisitors: number;
   lastVisitDate: string; // ISO 8601 format (YYYY-MM-DD)
+}
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
 }

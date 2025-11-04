@@ -17,6 +17,7 @@ export default function PostEditor({ post }: PostEditorProps) {
   const { t } = useTranslation();
   const [title, setTitle] = useState({ ko: '', en: '' });
   const [content, setContent] = useState({ ko: '', en: '' });
+  const [tags, setTags] = useState('');
   const [selectedLangs, setSelectedLangs] = useState(['ko']);
   const { addPost, updatePost } = usePosts();
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ export default function PostEditor({ post }: PostEditorProps) {
     if (post) {
       setTitle(post.title);
       setContent(post.content);
+      setTags(post.tags.map(t => t.name).join(', '));
     }
   }, [post]);
 
@@ -123,6 +125,17 @@ export default function PostEditor({ post }: PostEditorProps) {
             </div>
           </div>
         )}
+      </div>
+
+      <div className="grid w-full items-center gap-1.5">
+        <Label htmlFor="tags">{t('tags')}</Label>
+        <Input
+          type="text"
+          id="tags"
+          value={tags}
+          onChange={(e) => setTags(e.target.value)}
+          placeholder={t('tags_placeholder')}
+        />
       </div>
 
       <Button type="submit">{t('save')}</Button>

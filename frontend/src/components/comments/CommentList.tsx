@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from "react-i18next";
 import { useComments } from "@/contexts/CommentContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -24,9 +24,9 @@ const CommentItem = ({ comment, onReply }: CommentItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(comment.content);
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     if (editedContent.trim() !== comment.content) {
-      updateComment(comment.id, editedContent.trim());
+      await updateComment(comment.id, editedContent.trim());
     }
     setIsEditing(false);
   };
@@ -83,8 +83,19 @@ const CommentItem = ({ comment, onReply }: CommentItemProps) => {
 
 export default function CommentList({ postId }: CommentListProps) {
   const { t } = useTranslation();
-  const { getComments } = useComments();
-  const comments = getComments(postId);
+  const { comments, getComments, isLoading, error } = useComments();
+
+  useEffect(() => {
+    getComments(postId);
+  }, [postId, getComments]);
+
+  if (isLoading) {
+    return <div>Loading comments...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <section className="mt-12">

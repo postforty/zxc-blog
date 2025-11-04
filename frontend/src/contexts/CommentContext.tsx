@@ -1,65 +1,106 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
-import initialComments from '@/data/comments.json';
+import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { Comment } from '@/types';
 
 interface CommentContextType {
-  getComments: (postId: string) => Comment[];
-  addComment: (comment: Omit<Comment, 'id' | 'createdAt'> & { parentId?: string }) => void;
-  updateComment: (commentId: string, content: string) => void;
+  comments: Comment[];
+  isLoading: boolean;
+  error: string | null;
+  getComments: (postId: string) => void;
+  addComment: (comment: Omit<Comment, 'id' | 'createdAt'> & { parentId?: string }) => Promise<void>;
+  updateComment: (commentId: string, content: string) => Promise<void>;
+  deleteComment: (commentId: string) => Promise<void>;
 }
 
 const CommentContext = createContext<CommentContextType | undefined>(undefined);
 
 export const CommentProvider = ({ children }: { children: ReactNode }) => {
-  const [comments, setComments] = useState<Comment[]>(initialComments as Comment[]);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const getComments = (postId: string) => {
-    const postComments = comments.filter(c => c.postId === postId);
+  const getComments = useCallback(async (postId: string) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`http://localhost:3001/api/posts/${postId}/comments`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch comments');
+      }
+      const data = await response.json();
+      setComments(data);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-    const commentMap = new Map<string, Comment>();
-    postComments.forEach(comment => {
-      commentMap.set(comment.id, { ...comment, replies: [] }); // replies 배열 초기화
-    });
+  const addComment = async (comment: Omit<Comment, 'id' | 'createdAt'> & { parentId?: string }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/posts/${comment.postId}/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(comment),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to add comment');
+      }
+      const newComment = await response.json();
+      setComments(prevComments => [...prevComments, newComment]);
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
 
-    const rootComments: Comment[] = [];
-    commentMap.forEach(comment => {
-      if (comment.parentId) {
-        const parent = commentMap.get(comment.parentId);
-        if (parent) {
-          parent.replies?.push(comment);
+  const updateComment = async (commentId: string, content: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/comments/${commentId}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({ content }),
         }
-      } else {
-        rootComments.push(comment);
+      );
+      if (!response.ok) {
+        throw new Error('Failed to update comment');
       }
-    });
-
-    // 각 댓글의 replies 배열을 생성일 기준으로 정렬
-    commentMap.forEach(comment => {
-      if (comment.replies) {
-        comment.replies.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-      }
-    });
-
-    return rootComments.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      const updatedComment = await response.json();
+      setComments(prevComments =>
+        prevComments.map(c => (c.id === updatedComment.id ? updatedComment : c))
+      );
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
-  const addComment = (comment: Omit<Comment, 'id' | 'createdAt'> & { parentId?: string }) => {
-    const newComment: Comment = {
-      ...comment,
-      id: `comment-${Date.now()}`,
-      createdAt: new Date().toISOString(),
-    };
-    setComments(prevComments => [...prevComments, newComment]);
-  };
-
-  const updateComment = (commentId: string, content: string) => {
-    setComments(prevComments =>
-      prevComments.map(c => (c.id === commentId ? { ...c, content } : c))
-    );
+  const deleteComment = async (commentId: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/comments/${commentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete comment');
+      }
+      setComments(prevComments => prevComments.filter(c => c.id !== commentId));
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
   return (
-    <CommentContext.Provider value={{ getComments, addComment, updateComment }}>
+    <CommentContext.Provider value={{ comments, getComments, addComment, updateComment, deleteComment, isLoading, error }}>
       {children}
     </CommentContext.Provider>
   );

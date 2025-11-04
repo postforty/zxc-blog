@@ -6,8 +6,44 @@ import type { createPostSchema, updatePostSchema } from '../../zod/posts.schema.
 const prisma = new PrismaClient();
 
 export const createPost = async (postData: z.infer<typeof createPostSchema>) => {
-  return prisma.post.create({
-    data: postData,
+  const { tags, ...restOfPostData } = postData;
+
+  return prisma.$transaction(async (prisma) => {
+    const newPost = await prisma.post.create({
+      data: restOfPostData,
+      include: {
+        author: true,
+      },
+    });
+
+    if (tags && tags.length > 0) {
+      const tagOperations = tags.map(tagName => {
+        return prisma.tag.upsert({
+          where: { name: tagName },
+          update: {},
+          create: { name: tagName },
+        });
+      });
+
+      const createdOrFoundTags = await Promise.all(tagOperations);
+
+      await prisma.post.update({
+        where: { id: newPost.id },
+        data: {
+          tags: {
+            connect: createdOrFoundTags.map(tag => ({ id: tag.id })),
+          },
+        },
+      });
+    }
+
+    return prisma.post.findUnique({
+      where: { id: newPost.id },
+      include: {
+        author: true,
+        tags: true,
+      },
+    });
   });
 };
 

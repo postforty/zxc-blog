@@ -11,10 +11,11 @@ interface PostListProps {
 }
 
 export default function PostList({ selectedTag, searchQuery }: PostListProps) {
-  const { posts } = usePosts();
+  const { posts, isLoading, error } = usePosts();
   const [visiblePostsCount, setVisiblePostsCount] = useState(POSTS_PER_PAGE);
 
   const filteredPosts = useMemo(() => {
+    if (posts.length === 0) return [];
     let filtered = [...posts].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     if (selectedTag) {
@@ -40,6 +41,14 @@ export default function PostList({ selectedTag, searchQuery }: PostListProps) {
   const handleLoadMore = () => {
     setVisiblePostsCount(prevCount => prevCount + POSTS_PER_PAGE);
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div>

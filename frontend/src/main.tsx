@@ -19,6 +19,8 @@ import CommentManagementPage from './pages/admin/CommentManagementPage'
 import UserManagementPage from './pages/admin/UserManagementPage'
 import SettingsPage from './pages/admin/SettingsPage'
 
+import { AuthProvider } from './contexts/AuthContext';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -47,11 +49,13 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <PostProvider>
-        <CommentProvider>
-          <RouterProvider router={router} />
-        </CommentProvider>
-      </PostProvider>
+      <AuthProvider>
+        <PostProvider>
+          <CommentProvider>
+            <RouterProvider router={router} />
+          </CommentProvider>
+        </PostProvider>
+      </AuthProvider>
     </ThemeProvider>
   </React.StrictMode>,
 )

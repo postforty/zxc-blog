@@ -38,7 +38,7 @@ export default function PostListItem({ post }: PostListItemProps) {
       </CardHeader>
       <CardFooter className="flex-col items-start gap-1.5 text-sm">
         <div className="text-sm text-gray-500">
-          <span>{post.author}</span> &middot; <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+          <span>{post.author.name}</span> &middot; <span>{new Date(post.createdAt).toLocaleDateString()}</span>
         </div>
         <div className="flex justify-between w-full">
           <div className="text-muted-foreground">

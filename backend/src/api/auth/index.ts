@@ -1,9 +1,10 @@
 
 import { Router } from 'express';
 import passport from 'passport';
-import { register, login, refresh, logout } from './auth.controller.js';
+import { register, login, refresh, logout, getMe } from './auth.controller.js';
 import { validateRequest } from '../../middleware/validateRequest.js';
 import { registerSchema, loginSchema } from '../../zod/auth.schema.js';
+import { verifyToken } from '../../middleware/verifyToken.js';
 
 const router = Router();
 
@@ -106,6 +107,24 @@ router.post('/refresh', refresh);
  *         description: Successfully logged out
  */
 router.post('/logout', logout);
+
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     summary: Get the current user's information
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully fetched user information
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: User not found
+ */
+router.get('/me', verifyToken, getMe);
 
 /**
  * @swagger

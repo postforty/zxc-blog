@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useComments } from '@/contexts/CommentContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Link } from 'react-router-dom';
 
 interface CommentFormProps {
   postId: string;
@@ -14,14 +16,15 @@ export default function CommentForm({ postId, parentId, onCommentAdded }: Commen
   const { t } = useTranslation();
   const [content, setContent] = useState('');
   const { addComment } = useComments();
+  const { user, isAuthenticated } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim()) return;
+    if (!content.trim() || !isAuthenticated) return;
 
-    addComment({
+    await addComment({
       postId,
-      author: 'Guest', // TODO: Implement user authentication
+      author: user!.name, // user is checked via isAuthenticated
       content,
       parentId, // parentId 전달
     });
@@ -31,6 +34,14 @@ export default function CommentForm({ postId, parentId, onCommentAdded }: Commen
       onCommentAdded();
     }
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="mt-8 text-center">
+        <p>Please <Link to="/profile" className="underline">log in</Link> to write a comment.</p>
+      </div>
+    );
+  }
 
   return (
     <section className="mt-8">
