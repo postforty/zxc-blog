@@ -33,7 +33,6 @@ export interface VisitorStats {
   dailyVisitors: number;
   totalVisitors: number;
   yesterdayVisitors: number;
-  lastVisitDate: string; // ISO 8601 format (YYYY-MM-DD)
 }
 
 export interface User {

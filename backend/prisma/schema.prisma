@@ -81,3 +81,9 @@ enum Role {
   User
   Admin
 }
+
+model VisitorStat {
+  id    Int      @id @default(autoincrement())
+  date  DateTime @unique @db.Date
+  count Int      @default(1)
+}

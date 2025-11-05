@@ -3,11 +3,13 @@ import 'dotenv/config';
 import express from 'express';
 import type { Request, Response } from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import passport from './config/passport.js';
 import authRouter from './api/auth/index.js';
 import postsRouter from './api/posts/index.js';
 import commentsRouter from './api/comments/index.js';
 import adminRouter from './api/admin/index.js';
+import statsRouter from './api/stats/index.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -17,7 +19,8 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cookieParser());
 app.use(express.json());
 app.use(passport.initialize());
 
@@ -31,6 +34,7 @@ app.use('/api/posts', postsRouter);
 app.use('/api/posts/:postId/comments', commentsRouter);
 app.use('/api/comments', commentsRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/stats', statsRouter);
 
 app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok' });
