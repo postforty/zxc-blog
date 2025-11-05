@@ -1,8 +1,19 @@
 
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, Navigate } from 'react-router-dom';
 import { Home } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const AdminLayout = () => {
+  const { isAuthenticated, user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isAuthenticated || user?.role !== 'ADMIN') {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
       <aside className="w-64 bg-white dark:bg-gray-800 shadow-md flex flex-col">

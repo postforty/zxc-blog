@@ -13,11 +13,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import zxcvbLogoLight from "@/assets/zxcvb_logo_light.png";
 import zxcvbLogoDark from "@/assets/zxcvb_logo_dark.png";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Header() {
   const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { user, isLoading } = useAuth();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -47,18 +49,22 @@ export default function Header() {
               Profile
             </Link>
           </Button>
-          <Button asChild variant="ghost">
-            <Link to="/admin">
-              <Settings className="w-4 h-4 mr-2" />
-              Admin
-            </Link>
-          </Button>
-          <Button asChild variant="ghost">
-            <Link to="/editor">
-              <PlusSquare className="w-4 h-4 mr-2" />
-              {t("new_post")}
-            </Link>
-          </Button>
+          {!isLoading && user?.role === 'Admin' && (
+            <Button asChild variant="ghost">
+              <Link to="/admin">
+                <Settings className="w-4 h-4 mr-2" />
+                Admin
+              </Link>
+            </Button>
+          )}
+          {!isLoading && user?.role === 'Admin' && (
+            <Button asChild variant="ghost">
+              <Link to="/editor">
+                <PlusSquare className="w-4 h-4 mr-2" />
+                {t("new_post")}
+              </Link>
+            </Button>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">
@@ -106,20 +112,24 @@ export default function Header() {
           >
             Profile
           </Link>
-          <Link
-            to="/admin"
-            onClick={() => setIsOpen(false)}
-            className="text-2xl"
-          >
-            Admin
-          </Link>
-          <Link
-            to="/editor"
-            onClick={() => setIsOpen(false)}
-            className="text-2xl"
-          >
-            {t("new_post")}
-          </Link>
+          {!isLoading && user?.role === 'Admin' && (
+            <Link
+              to="/admin"
+              onClick={() => setIsOpen(false)}
+              className="text-2xl"
+            >
+              Admin
+            </Link>
+          )}
+          {!isLoading && user?.role === 'Admin' && (
+            <Link
+              to="/editor"
+              onClick={() => setIsOpen(false)}
+              className="text-2xl"
+            >
+              {t("new_post")}
+            </Link>
+          )}
           <div className="flex gap-4">
             <Button
               variant="ghost"
