@@ -10,7 +10,7 @@ const AdminLayout = () => {
     return <div>Loading...</div>;
   }
 
-  if (!isAuthenticated || user?.role !== 'ADMIN') {
+  if (!isAuthenticated || user?.role !== 'Admin') {
     return <Navigate to="/" replace />;
   }
 
