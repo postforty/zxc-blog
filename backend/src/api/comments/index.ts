@@ -1,4 +1,3 @@
-
 import { Router } from 'express';
 import { create, update, remove, findAllByPostId } from './comments.controller.js';
 import { verifyToken } from '../../middleware/verifyToken.js';

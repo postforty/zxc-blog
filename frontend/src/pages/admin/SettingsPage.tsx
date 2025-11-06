@@ -1,19 +1,80 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import settings from '@/data/settings.json';
+
+interface Settings {
+  title: string;
+  description: string;
+}
 
 const SettingsPage = () => {
-  const [title, setTitle] = useState(settings.title);
-  const [description, setDescription] = useState(settings.description);
+  const [settings, setSettings] = useState<Settings>({ title: '', description: '' });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSave = () => {
-    // Here you would typically save the data to a backend or local storage
-    console.log('Saved:', { title, description });
-    alert('Settings saved!');
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/admin/settings', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch settings');
+        }
+        const data = await response.json();
+        setSettings(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, []);
+
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(settings),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save settings');
+      }
+
+      alert('Settings saved!');
+    } catch (err) {
+      alert('Error saving settings: ' + err.message);
+    }
   };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setSettings((prevSettings) => ({
+      ...prevSettings,
+      [id]: value,
+    }));
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div>
@@ -27,16 +88,16 @@ const SettingsPage = () => {
             <Label htmlFor="title">Blog Title</Label>
             <Input
               id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={settings.title}
+              onChange={handleChange}
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">Blog Description</Label>
             <Input
               id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={settings.description}
+              onChange={handleChange}
             />
           </div>
           <Button onClick={handleSave}>Save Settings</Button>

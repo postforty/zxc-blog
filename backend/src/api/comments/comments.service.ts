@@ -37,3 +37,11 @@ export const getCommentsByPostId = async (postId: number) => {
         }
     });
 };
+
+export const getAllComments = async () => {
+  return prisma.comment.findMany({
+    include: {
+      author: true,
+    },
+  });
+};

@@ -8,6 +8,7 @@ import passport from './config/passport.js';
 import authRouter from './api/auth/index.js';
 import postsRouter from './api/posts/index.js';
 import commentsRouter from './api/comments/index.js';
+import allCommentsRouter from './api/comments/comments.router.js';
 import adminRouter from './api/admin/index.js';
 import statsRouter from './api/stats/index.js';
 import path from 'path';
@@ -32,7 +33,7 @@ app.get('/docs', (req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/posts', postsRouter);
 app.use('/api/posts/:postId/comments', commentsRouter);
-app.use('/api/comments', commentsRouter);
+app.use('/api/comments', allCommentsRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/stats', statsRouter);
 

@@ -16,11 +16,58 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import posts from '@/data/posts.json';
+import { useEffect, useState } from 'react';
+
+interface Post {
+  id: number;
+  title: {
+    ko: string;
+    en: string;
+  };
+  author: {
+    name: string;
+  };
+  createdAt: string;
+}
 
 const PostManagementPage = () => {
   const { i18n } = useTranslation();
   const currentLang = i18n.language as 'ko' | 'en';
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/posts', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch posts');
+        }
+        const data = await response.json();
+        setPosts(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div>
@@ -29,7 +76,8 @@ const PostManagementPage = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Title</TableHead>
+              <TableHead>Title (Korean)</TableHead>
+              <TableHead>Title (English)</TableHead>
               <TableHead>Author</TableHead>
               <TableHead>Created At</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -38,8 +86,9 @@ const PostManagementPage = () => {
           <TableBody>
             {posts.map((post) => (
               <TableRow key={post.id}>
-                <TableCell className="font-medium">{post.title[currentLang]}</TableCell>
-                <TableCell>{post.author}</TableCell>
+                <TableCell className="font-medium">{post.title.ko}</TableCell>
+                <TableCell className="font-medium">{post.title.en}</TableCell>
+                <TableCell>{post.author.name}</TableCell>
                 <TableCell>{new Date(post.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>

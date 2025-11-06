@@ -15,9 +15,54 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import comments from '@/data/comments.json';
+import { useEffect, useState } from 'react';
+
+interface Comment {
+  id: number;
+  content: string;
+  author: {
+    name: string;
+  };
+  createdAt: string;
+}
 
 const CommentManagementPage = () => {
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/comments/all', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch comments');
+        }
+        const data = await response.json();
+        setComments(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchComments();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Comment Management</h1>
@@ -34,7 +79,7 @@ const CommentManagementPage = () => {
           <TableBody>
             {comments.map((comment) => (
               <TableRow key={comment.id}>
-                <TableCell className="font-medium">{comment.author}</TableCell>
+                <TableCell className="font-medium">{comment.author.name}</TableCell>
                 <TableCell>{comment.content}</TableCell>
                 <TableCell>{new Date(comment.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell className="text-right">
