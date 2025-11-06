@@ -31,29 +31,56 @@ const CommentManagementPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchComments = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/comments/all', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch comments');
+      }
+      const data = await response.json();
+      setComments(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('/api/comments/all', {
+    fetchComments();
+  }, []);
+
+  const handleDelete = async (commentId: number) => {
+    if (!window.confirm('Are you sure you want to delete this comment?')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/comments/${commentId}`,
+        {
+          method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`,
           },
-        });
-        if (!response.ok) {
-          throw new Error('Failed to fetch comments');
         }
-        const data = await response.json();
-        setComments(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+      );
 
-    fetchComments();
-  }, []);
+      if (!response.ok) {
+        throw new Error('Failed to delete comment');
+      }
+
+      setComments(prevComments => prevComments.filter(c => c.id !== commentId));
+    } catch (err) {
+      console.error(err);
+      alert('Error deleting comment');
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -92,8 +119,7 @@ const CommentManagementPage = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Approve</DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-500">Delete</DropdownMenuItem>
+                      <DropdownMenuItem className="text-red-500" onClick={() => handleDelete(comment.id)}>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

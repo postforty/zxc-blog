@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { create, update, remove, findAllByPostId } from './comments.controller.js';
+import { create, findAllByPostId } from './comments.controller.js';
 import { verifyToken } from '../../middleware/verifyToken.js';
 import { validateRequest } from '../../middleware/validateRequest.js';
-import { createCommentSchema, updateCommentSchema } from '../../zod/comments.schema.js';
+import { createCommentSchema } from '../../zod/comments.schema.js';
 
 
 const router = Router({ mergeParams: true });
@@ -64,65 +64,6 @@ router.post(
   validateRequest({ body: createCommentSchema }),
   create
 );
-
-/**
- * @swagger
- * /api/comments/{id}:
- *   put:
- *     summary: Update a comment
- *     tags: [Comments]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UpdateComment'
- *     responses:
- *       200:
- *         description: Successfully updated a comment
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: Comment not found
- */
-router.put(
-  '/:id',
-  verifyToken,
-  validateRequest({ body: updateCommentSchema }),
-  update
-);
-
-/**
- * @swagger
- * /api/comments/{id}:
- *   delete:
- *     summary: Delete a comment
- *     tags: [Comments]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       204:
- *         description: Successfully deleted a comment
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: Comment not found
- */
-router.delete('/:id', verifyToken, remove);
 
 /**
  * @swagger
