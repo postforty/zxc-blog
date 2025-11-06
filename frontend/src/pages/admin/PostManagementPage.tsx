@@ -17,6 +17,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { usePosts } from '@/contexts/PostContext';
 
 interface Post {
   id: number;
@@ -33,35 +35,27 @@ interface Post {
 const PostManagementPage = () => {
   const { i18n } = useTranslation();
   const currentLang = i18n.language as 'ko' | 'en';
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { posts, isLoading, error, deletePost } = usePosts();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('/api/posts', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        if (!response.ok) {
-          throw new Error('Failed to fetch posts');
-        }
-        const data = await response.json();
-        setPosts(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const handleDelete = async (postId: number) => {
+    if (!window.confirm('Are you sure you want to delete this post?')) {
+      return;
+    }
 
-    fetchPosts();
-  }, []);
+    try {
+      await deletePost(postId.toString());
+    } catch (err) {
+      console.error(err);
+      alert('Error deleting post');
+    }
+  };
 
-  if (loading) {
+  const handleEdit = (postId: number) => {
+    navigate(`/editor/${postId}`);
+  };
+
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
@@ -100,8 +94,8 @@ const PostManagementPage = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-500">Delete</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleEdit(post.id)}>Edit</DropdownMenuItem>
+                      <DropdownMenuItem className="text-red-500" onClick={() => handleDelete(post.id)}>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

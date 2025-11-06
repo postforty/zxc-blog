@@ -130,14 +130,47 @@ export const updatePost = async (id: number, postData: z.infer<typeof updatePost
 
 export const deletePost = async (id: number) => {
   return prisma.$transaction(async (prisma) => {
+    // Get tags associated with the post before deleting the post
+    const postToDelete = await prisma.post.findUnique({
+      where: { id },
+      include: {
+        tags: true,
+      },
+    });
+
+    if (!postToDelete) {
+      throw new Error('Post not found');
+    }
+
     // Delete all likes associated with the post
     await prisma.like.deleteMany({
       where: { postId: id },
     });
-    // Then delete the post
-    return prisma.post.delete({
+
+    // Delete the post
+    await prisma.post.delete({
       where: { id },
     });
+
+    // After deleting the post, check for orphan tags
+    for (const tag of postToDelete.tags) {
+      const remainingPostsWithTag = await prisma.post.count({
+        where: {
+          tags: {
+            some: {
+              id: tag.id,
+            },
+          },
+        },
+      });
+
+      if (remainingPostsWithTag === 0) {
+        await prisma.tag.delete({
+          where: { id: tag.id },
+        });
+        console.log(`Deleted orphan tag: ${tag.name} (ID: ${tag.id})`);
+      }
+    }
   });
 };
 

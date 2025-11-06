@@ -10,6 +10,11 @@ export const createComment = async (commentData: z.infer<typeof createCommentSch
     data: commentData,
     include: {
       author: true,
+      post: {
+        select: {
+          title: true,
+        },
+      },
     },
   });
 };
@@ -18,6 +23,9 @@ export const updateComment = async (id: number, commentData: z.infer<typeof upda
   return prisma.comment.update({
     where: { id },
     data: commentData,
+    include: {
+      author: true,
+    },
   });
 };
 
@@ -32,6 +40,11 @@ export const getCommentsByPostId = async (postId: number) => {
         where: { postId },
         include: {
             author: true,
+            post: {
+              select: {
+                title: true,
+              },
+            },
         }
     });
 };
@@ -40,6 +53,11 @@ export const getAllComments = async () => {
   return prisma.comment.findMany({
     include: {
       author: true,
+      post: {
+        select: {
+          title: true,
+        },
+      },
     },
   });
 };

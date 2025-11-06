@@ -16,6 +16,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface Comment {
   id: number;
@@ -24,12 +26,22 @@ interface Comment {
     name: string;
   };
   createdAt: string;
+  postId: string;
+  post: {
+    title: {
+      ko: string;
+      en: string;
+    };
+  };
 }
 
 const CommentManagementPage = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { i18n } = useTranslation();
+  const currentLang = i18n.language as 'ko' | 'en';
 
   const fetchComments = async () => {
     try {
@@ -82,6 +94,10 @@ const CommentManagementPage = () => {
     }
   };
 
+  const handleRowClick = (postId: string) => {
+    navigate(`/posts/${postId}`);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -99,17 +115,19 @@ const CommentManagementPage = () => {
             <TableRow>
               <TableHead>Author</TableHead>
               <TableHead>Comment</TableHead>
+              <TableHead>Post Title</TableHead>
               <TableHead>Created At</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {comments.map((comment) => (
-              <TableRow key={comment.id}>
+              <TableRow key={comment.id} onClick={() => handleRowClick(comment.postId)} className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
                 <TableCell className="font-medium">{comment.author.name}</TableCell>
                 <TableCell>{comment.content}</TableCell>
+                <TableCell>{comment.post.title[currentLang] || comment.post.title.en}</TableCell>
                 <TableCell>{new Date(comment.createdAt).toLocaleDateString()}</TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right" onClick={(e) => e.stopPropagation()}> {/* Stop propagation to prevent row click */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="h-8 w-8 p-0">

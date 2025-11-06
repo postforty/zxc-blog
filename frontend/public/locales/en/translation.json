@@ -24,5 +24,7 @@
   "korean": "Korean",
   "english": "English",
   "search_posts": "Search posts...",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "profile": "Profile",
+  "admin": "Admin"
 }

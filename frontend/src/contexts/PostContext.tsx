@@ -99,7 +99,7 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
       if (!response.ok) {
         throw new Error('Failed to delete post');
       }
-      setPosts(prevPosts => prevPosts.filter(post => post.id !== id));
+      setPosts(prevPosts => prevPosts.filter(post => post.id !== parseInt(id, 10)));
     } catch (err: any) {
       setError(err.message);
     }

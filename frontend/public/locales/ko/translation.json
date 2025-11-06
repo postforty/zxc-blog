@@ -24,5 +24,7 @@
   "korean": "한국어",
   "english": "영어",
   "search_posts": "게시물 검색...",
-  "cancel": "취소"
+  "cancel": "취소",
+  "profile": "프로필",
+  "admin": "관리자"
 }

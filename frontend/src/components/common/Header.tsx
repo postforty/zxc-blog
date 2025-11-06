@@ -46,14 +46,14 @@ export default function Header() {
           <Button asChild variant="ghost">
             <Link to="/profile">
               <User className="w-4 h-4 mr-2" />
-              Profile
+              {t("profile")}
             </Link>
           </Button>
           {!isLoading && user?.role === 'Admin' && (
             <Button asChild variant="ghost">
               <Link to="/admin">
                 <Settings className="w-4 h-4 mr-2" />
-                Admin
+                {t("admin")}
               </Link>
             </Button>
           )}
@@ -110,7 +110,7 @@ export default function Header() {
             onClick={() => setIsOpen(false)}
             className="text-2xl"
           >
-            Profile
+            {t("profile")}
           </Link>
           {!isLoading && user?.role === 'Admin' && (
             <Link
@@ -118,7 +118,7 @@ export default function Header() {
               onClick={() => setIsOpen(false)}
               className="text-2xl"
             >
-              Admin
+              {t("admin")}
             </Link>
           )}
           {!isLoading && user?.role === 'Admin' && (
