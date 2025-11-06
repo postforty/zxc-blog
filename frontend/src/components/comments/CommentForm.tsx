@@ -22,12 +22,7 @@ export default function CommentForm({ postId, parentId, onCommentAdded }: Commen
     e.preventDefault();
     if (!content.trim() || !isAuthenticated) return;
 
-    await addComment({
-      postId,
-      author: user!.name, // user is checked via isAuthenticated
-      content,
-      parentId, // parentId 전달
-    });
+    await addComment(content, postId, parentId);
 
     setContent('');
     if (onCommentAdded) {

@@ -8,6 +8,9 @@ const prisma = new PrismaClient();
 export const createComment = async (commentData: z.infer<typeof createCommentSchema>) => {
   return prisma.comment.create({
     data: commentData,
+    include: {
+      author: true,
+    },
   });
 };
 
@@ -29,11 +32,6 @@ export const getCommentsByPostId = async (postId: number) => {
         where: { postId },
         include: {
             author: true,
-            replies: {
-                include: {
-                    author: true,
-                }
-            }
         }
     });
 };

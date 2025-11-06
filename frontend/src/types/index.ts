@@ -22,7 +22,8 @@ export interface Post {
 export interface Comment {
   id: string;
   postId: string;
-  author: string;
+  author: { name: string };
+  authorId: number;
   content: string;
   createdAt: string;
   parentId?: string; // 대댓글 기능을 위한 부모 댓글 ID

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from "react-i18next";
 import { useComments } from "@/contexts/CommentContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -34,10 +34,10 @@ const CommentItem = ({ comment, onReply }: CommentItemProps) => {
   return (
     <div className="flex items-start gap-4">
       <Avatar>
-        <AvatarFallback>{comment.author.charAt(0).toUpperCase()}</AvatarFallback>
+        <AvatarFallback>{comment.author.name.charAt(0).toUpperCase()}</AvatarFallback>
       </Avatar>
       <div className="flex-1">
-        <p className="font-semibold">{comment.author}</p>
+        <p className="font-semibold">{comment.author.name}</p>
         <p className="text-sm text-muted-foreground mb-2">{new Date(comment.createdAt).toLocaleString()}</p>
         {isEditing ? (
           <div className="space-y-2">
@@ -81,6 +81,12 @@ const CommentItem = ({ comment, onReply }: CommentItemProps) => {
   );
 };
 
+import { buildCommentTree } from '@/lib/utils';
+
+// ... (imports)
+
+// ... (CommentItem component)
+
 export default function CommentList({ postId }: CommentListProps) {
   const { t } = useTranslation();
   const { comments, getComments, isLoading, error } = useComments();
@@ -88,6 +94,8 @@ export default function CommentList({ postId }: CommentListProps) {
   useEffect(() => {
     getComments(postId);
   }, [postId, getComments]);
+
+  const commentTree = buildCommentTree(comments);
 
   if (isLoading) {
     return <div>Loading comments...</div>;
@@ -101,10 +109,10 @@ export default function CommentList({ postId }: CommentListProps) {
     <section className="mt-12">
       <h3 className="text-2xl font-bold mb-6">{t('comments_heading', { count: comments.length })}</h3>
       <div className="space-y-6">
-        {comments.map((comment, index) => (
+        {commentTree.map((comment, index) => (
           <div key={comment.id}>
             <CommentItem comment={comment} onReply={() => {}} />
-            {index < comments.length - 1 && <Separator className="my-6" />} 
+            {index < commentTree.length - 1 && <Separator className="my-6" />} 
           </div>
         ))}
         {comments.length === 0 && <p className="text-muted-foreground">{t('no_comments_yet')}</p>}

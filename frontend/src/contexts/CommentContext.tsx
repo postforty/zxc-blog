@@ -1,12 +1,13 @@
 import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { Comment } from '@/types';
+import { useAuth } from './AuthContext';
 
 interface CommentContextType {
   comments: Comment[];
   isLoading: boolean;
   error: string | null;
   getComments: (postId: string) => void;
-  addComment: (comment: Omit<Comment, 'id' | 'createdAt'> & { parentId?: string }) => Promise<void>;
+  addComment: (content: string, postId: string, parentId?: string) => Promise<void>;
   updateComment: (commentId: string, content: string) => Promise<void>;
   deleteComment: (commentId: string) => Promise<void>;
 }
@@ -17,6 +18,7 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   const getComments = useCallback(async (postId: string) => {
     setIsLoading(true);
@@ -35,16 +37,21 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const addComment = async (comment: Omit<Comment, 'id' | 'createdAt'> & { parentId?: string }) => {
+  const addComment = async (content: string, postId: string, parentId?: string) => {
+    if (!user) {
+      setError('You must be logged in to comment.');
+      return;
+    }
+
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3001/api/posts/${comment.postId}/comments`, {
+      const response = await fetch(`http://localhost:3001/api/posts/${postId}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(comment),
+        body: JSON.stringify({ content, postId: parseInt(postId), authorId: user.id, parentId: parentId ? parseInt(parentId) : undefined }),
       });
       if (!response.ok) {
         throw new Error('Failed to add comment');
