@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/app.ts",
+    "dev": "nodemon --watch src --ext ts --exec tsx src/app.ts",
     "docs:generate": "node generate-spec.js",
     "docs:build": "redocly build-docs dist/openapi.json -o dist/redoc.html"
   },
@@ -26,6 +26,7 @@
     "passport-jwt": "^4.0.1",
     "pg": "^8.16.3",
     "uuid": "^13.0.0",
+    "vite": "^7.2.2",
     "zod": "^4.1.12"
   },
   "devDependencies": {

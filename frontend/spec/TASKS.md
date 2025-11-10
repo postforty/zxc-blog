@@ -103,25 +103,24 @@
     - [x] 사이트 정보 및 메뉴 설정 UI 구현
 
 ## 12. SSR (서버 사이드 렌더링) 구현
-
-- [ ] **기반 설정**
-    - [ ] `react-helmet-async` 설치
-    - [ ] `frontend/src/routes.tsx` 파일 생성 및 라우트 정의 분리
-    - [ ] `frontend/src/main.tsx`를 `frontend/src/entry-client.tsx`로 변경 및 Hydration 로직 적용
-    - [ ] `frontend/src/entry-server.tsx` 파일 생성 및 서버 렌더링 로직 구현
-    - [ ] `frontend/vite.config.ts` SSR 빌드 설정 추가 (클라이언트/서버 번들 분리)
-    - [ ] `frontend/index.html`에 SSR 아웃렛 및 초기 데이터 주입을 위한 플레이스홀더 추가
-- [ ] **백엔드 연동**
-    - [ ] `backend/src/app.ts`에 SSR 미들웨어 추가
-    - [ ] 개발/프로덕션 환경별 SSR 처리 로직 구현
-- [ ] **데이터 처리**
-    - [ ] `react-router-dom`의 `loader` 함수를 사용하여 라우트별 데이터 페칭 로직 구현
-    - [ ] 서버에서 페칭한 데이터를 클라이언트로 전달 및 Hydration 로직 구현 (`window.__INITIAL_DATA__` 활용)
-- [ ] **SEO 및 성능 최적화**
-    - [ ] `react-helmet-async`를 사용하여 동적 메타 태그 (title, description, OG, Canonical URL) 구현
-    - [ ] 구조화된 데이터 (JSON-LD) 추가 (예: `BlogPosting` 스키마)
-    - [ ] SSR 에러 발생 시 Fallback 처리 및 404 페이지 렌더링
-    - [ ] 서버 렌더링 결과 캐싱 전략 고려
-    - [ ] 클라이언트 코드 스플리팅 및 Lazy Loading 적용
-- [ ] **보안**
-    - [ ] 초기 데이터 직렬화 시 XSS 방지 처리
+- [x] **기반 설정**
+    - [x] `react-helmet-async` 설치
+    - [x] `frontend/src/routes.tsx` 파일 생성 및 라우트 정의 분리
+    - [x] `frontend/src/main.tsx`를 `frontend/src/entry-client.tsx`로 변경 및 Hydration 로직 적용
+    - [x] `frontend/src/entry-server.tsx` 파일 생성 및 서버 렌더링 로직 구현
+    - [x] `frontend/vite.config.ts` SSR 빌드 설정 추가 (클라이언트/서버 번들 분리)
+    - [x] `frontend/index.html`에 SSR 아웃렛 및 초기 데이터 주입을 위한 플레이스홀더 추가
+- [x] **백엔드 연동**
+    - [x] `backend/src/app.ts`에 SSR 미들웨어 추가
+    - [x] 개발/프로덕션 환경별 SSR 처리 로직 구현
+- [x] **데이터 처리**
+    - [x] `react-router-dom`의 `loader` 함수를 사용하여 라우트별 데이터 페칭 로직 구현
+    - [x] 서버에서 페칭한 데이터를 클라이언트로 전달 및 Hydration 로직 구현 (`window.__INITIAL_DATA__` 활용)
+- [x] **SEO 및 성능 최적화**
+    - [x] `react-helmet-async`를 사용하여 동적 메타 태그 (title, description, OG, Canonical URL) 구현
+    - [x] 구조화된 데이터 (JSON-LD) 추가 (예: `BlogPosting` 스키마)
+    - [x] SSR 에러 발생 시 Fallback 처리 및 404 페이지 렌더링
+    - [x] 서버 렌더링 결과 캐싱 전략 고려
+    - [x] 클라이언트 코드 스플리팅 및 Lazy Loading 적용
+- [x] **보안**
+    - [x] 초기 데이터 직렬화 시 XSS 방지 처리

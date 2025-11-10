@@ -1,17 +1,16 @@
 import { useState, useMemo, useEffect } from "react";
-import { usePosts } from "@/contexts/PostContext";
 import PostListItem from "./PostListItem";
 import { Button } from "@/components/ui/button";
 
 const POSTS_PER_PAGE = 6;
 
 interface PostListProps {
+  posts: any[]; // Add posts prop
   selectedTag: string | null;
   searchQuery: string;
 }
 
-export default function PostList({ selectedTag, searchQuery }: PostListProps) {
-  const { posts, isLoading, error } = usePosts();
+export default function PostList({ posts, selectedTag, searchQuery }: PostListProps) {
   const [visiblePostsCount, setVisiblePostsCount] = useState(POSTS_PER_PAGE);
 
   const filteredPosts = useMemo(() => {
@@ -42,12 +41,9 @@ export default function PostList({ selectedTag, searchQuery }: PostListProps) {
     setVisiblePostsCount(prevCount => prevCount + POSTS_PER_PAGE);
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
+  // No longer need isLoading and error from usePosts, handle them in HomePage if necessary
+  if (posts.length === 0 && !searchQuery && !selectedTag) {
+    return <div>게시물이 없습니다.</div>; // Or a more appropriate message
   }
 
   return (
