@@ -54,10 +54,10 @@
 
 ## 7. 백엔드 연동 (향후)
 
-- [ ] 백end API 서버 구축
-- [ ] 데이터베이스 스키마 설계
-- [ ] 기존 클라이언트 측 로직을 API 호출로 대체
-- [ ] 사용자 인증 기능 구현
+- [x] 백end API 서버 구축
+- [x] 데이터베이스 스키마 설계
+- [x] 기존 클라이언트 측 로직을 API 호출로 대체
+- [x] 사용자 인증 기능 구현
 
 ## 8. 방문자 통계 기능
 
@@ -101,3 +101,27 @@
     - [x] 통계 대시보드 UI 구현
 - [x] **3단계: 블로그 설정**
     - [x] 사이트 정보 및 메뉴 설정 UI 구현
+
+## 12. SSR (서버 사이드 렌더링) 구현
+
+- [ ] **기반 설정**
+    - [ ] `react-helmet-async` 설치
+    - [ ] `frontend/src/routes.tsx` 파일 생성 및 라우트 정의 분리
+    - [ ] `frontend/src/main.tsx`를 `frontend/src/entry-client.tsx`로 변경 및 Hydration 로직 적용
+    - [ ] `frontend/src/entry-server.tsx` 파일 생성 및 서버 렌더링 로직 구현
+    - [ ] `frontend/vite.config.ts` SSR 빌드 설정 추가 (클라이언트/서버 번들 분리)
+    - [ ] `frontend/index.html`에 SSR 아웃렛 및 초기 데이터 주입을 위한 플레이스홀더 추가
+- [ ] **백엔드 연동**
+    - [ ] `backend/src/app.ts`에 SSR 미들웨어 추가
+    - [ ] 개발/프로덕션 환경별 SSR 처리 로직 구현
+- [ ] **데이터 처리**
+    - [ ] `react-router-dom`의 `loader` 함수를 사용하여 라우트별 데이터 페칭 로직 구현
+    - [ ] 서버에서 페칭한 데이터를 클라이언트로 전달 및 Hydration 로직 구현 (`window.__INITIAL_DATA__` 활용)
+- [ ] **SEO 및 성능 최적화**
+    - [ ] `react-helmet-async`를 사용하여 동적 메타 태그 (title, description, OG, Canonical URL) 구현
+    - [ ] 구조화된 데이터 (JSON-LD) 추가 (예: `BlogPosting` 스키마)
+    - [ ] SSR 에러 발생 시 Fallback 처리 및 404 페이지 렌더링
+    - [ ] 서버 렌더링 결과 캐싱 전략 고려
+    - [ ] 클라이언트 코드 스플리팅 및 Lazy Loading 적용
+- [ ] **보안**
+    - [ ] 초기 데이터 직렬화 시 XSS 방지 처리
