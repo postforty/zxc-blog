@@ -26,5 +26,14 @@
   "search_posts": "Search posts...",
   "cancel": "Cancel",
   "profile": "Profile",
-  "admin": "Admin"
+  "admin": {
+    "title": "Admin",
+    "dashboard": "Dashboard",
+    "posts": "Posts",
+    "comments": "Comments",
+    "users": "Users",
+    "settings": "Settings",
+    "goToBlog": "Go to Blog"
+  },
+  "loading": "Loading..."
 }
