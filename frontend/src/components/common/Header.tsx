@@ -30,7 +30,7 @@ export default function Header() {
       <div className="container flex items-center justify-between px-4 mx-auto sm:px-6 lg:px-8">
         <Link to="/" className="text-2xl font-bold hover:no-underline">
           <div className="flex items-center gap-2">
-            <div className="h-16 overflow-hidden">
+            <div className="h-6 overflow-hidden sm:h-10">
               <img
                 src={theme === "dark" ? zxcvbLogoDark : zxcvbLogoLight}
                 alt="zxcvb blog logo"
@@ -38,7 +38,7 @@ export default function Header() {
               />
             </div>
             <div className="rotate-[-10deg] origin-bottom-left">
-              <span className="text-sm">log</span>
+              <span className="text-xs sm:text-sm">log</span>
             </div>
           </div>
         </Link>
@@ -49,7 +49,7 @@ export default function Header() {
               {t("profile")}
             </Link>
           </Button>
-          {!isLoading && user?.role === 'Admin' && (
+          {!isLoading && user?.role === "Admin" && (
             <Button asChild variant="ghost">
               <Link to="/admin">
                 <Settings className="w-4 h-4 mr-2" />
@@ -57,7 +57,7 @@ export default function Header() {
               </Link>
             </Button>
           )}
-          {!isLoading && user?.role === 'Admin' && (
+          {!isLoading && user?.role === "Admin" && (
             <Button asChild variant="ghost">
               <Link to="/editor">
                 <PlusSquare className="w-4 h-4 mr-2" />
@@ -112,7 +112,7 @@ export default function Header() {
           >
             {t("profile")}
           </Link>
-          {!isLoading && user?.role === 'Admin' && (
+          {!isLoading && user?.role === "Admin" && (
             <Link
               to="/admin"
               onClick={() => setIsOpen(false)}
@@ -121,7 +121,7 @@ export default function Header() {
               {t("admin")}
             </Link>
           )}
-          {!isLoading && user?.role === 'Admin' && (
+          {!isLoading && user?.role === "Admin" && (
             <Link
               to="/editor"
               onClick={() => setIsOpen(false)}
