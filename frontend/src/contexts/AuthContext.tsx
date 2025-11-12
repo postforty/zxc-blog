@@ -1,5 +1,7 @@
+"use client";
+
 import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import { User } from '@/types';
+import { User } from '../types'; // Adjusted path
 
 interface AuthContextType {
   isAuthenticated: boolean;

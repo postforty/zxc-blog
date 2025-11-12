@@ -51,6 +51,7 @@ model Comment {
   parentId  Int?
   replies   Comment[] @relation("Replies")
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Tag {

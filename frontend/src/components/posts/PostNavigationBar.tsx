@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { Post } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ export default function PostNavigationBar({ prevPost, nextPost }: PostNavigation
   return (
     <div className="flex justify-between my-8 gap-4">
       {nextPost ? (
-        <Link to={`/posts/${nextPost.id}`} className="w-1/2">
+        <Link href={`/posts/${nextPost.id}`} className="w-1/2">
           <Button variant="outline" className="w-full h-full">
             <div className="truncate">
               <div>다음 글</div>
@@ -27,7 +27,7 @@ export default function PostNavigationBar({ prevPost, nextPost }: PostNavigation
         <div className="w-1/2" />
       )}
       {prevPost ? (
-        <Link to={`/posts/${prevPost.id}`} className="w-1/2">
+        <Link href={`/posts/${prevPost.id}`} className="w-1/2">
           <Button variant="outline" className="w-full h-full">
             <div className="truncate">
               <div>이전 글</div>

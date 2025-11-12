@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
-import { ArrowUp, ArrowDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+"use client";
+
+import { useState, useEffect } from "react";
+import { ArrowUp, ArrowDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const ScrollToTopBottom = () => {
   const [showTopButton, setShowTopButton] = useState(false);
@@ -14,32 +16,49 @@ const ScrollToTopBottom = () => {
       setShowTopButton(false);
     }
 
-    // Show bottom button if user is not at the bottom of the page
-    const isAtBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 10; // 10px buffer
-    setShowBottomButton(!isAtBottom);
+    // Check if page has scrollable content
+    const hasScroll =
+      document.documentElement.scrollHeight > window.innerHeight;
+
+    // Show bottom button if user is not at the bottom of the page and page has scroll
+    const isAtBottom =
+      window.innerHeight + window.scrollY >=
+      document.documentElement.scrollHeight - 10; // 10px buffer
+    setShowBottomButton(hasScroll && !isAtBottom);
   };
 
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   };
 
   const scrollToBottom = () => {
     window.scrollTo({
       top: document.documentElement.scrollHeight,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   };
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll, { passive: true });
+
+    // Observe changes in document body height (for dynamic content)
+    const resizeObserver = new ResizeObserver(() => {
+      handleScroll();
+    });
+
+    resizeObserver.observe(document.body);
+
     // Initial check on mount
     handleScroll();
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+      resizeObserver.disconnect();
     };
   }, []);
 

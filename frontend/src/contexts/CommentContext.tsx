@@ -1,5 +1,7 @@
+"use client";
+
 import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { Comment } from '@/types';
+import { Comment } from '../types'; // Adjusted path
 import { useAuth } from './AuthContext';
 
 interface CommentContextType {

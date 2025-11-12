@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { findAll, findOne, create, update, remove, getAllTags } from './posts.controller.js';
+import { findAll, findOne, create, update, remove, getAllTags, incrementView } from './posts.controller.js';
 import { toggle } from './likes.controller.js';
 import { optionalAuth } from '../../middleware/optionalAuth.js';
 import { verifyToken } from '../../middleware/verifyToken.js';
@@ -60,6 +60,28 @@ router.get('/tags', getAllTags);
  *         description: Post not found
  */
 router.get('/:id', findOne);
+
+/**
+ * @swagger
+ * /api/posts/{id}/view:
+ *   post:
+ *     summary: Increment view count for a post
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: View count incremented successfully
+ *       400:
+ *         description: Invalid post ID
+ *       500:
+ *         description: Failed to increment view count
+ */
+router.post('/:id/view', incrementView);
 
 /**
  * @swagger

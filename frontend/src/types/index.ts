@@ -22,10 +22,11 @@ export interface Post {
 export interface Comment {
   id: string;
   postId: string;
-  author: { name: string };
+  author: { name: string; id: number };
   authorId: number;
   content: string;
   createdAt: string;
+  updatedAt?: string; // 수정 시간
   parentId?: string; // 대댓글 기능을 위한 부모 댓글 ID
   replies?: Comment[]; // 대댓글 목록
 }

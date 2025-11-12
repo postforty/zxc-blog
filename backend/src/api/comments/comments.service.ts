@@ -19,12 +19,33 @@ export const createComment = async (commentData: z.infer<typeof createCommentSch
   });
 };
 
-export const updateComment = async (id: number, commentData: z.infer<typeof updateCommentSchema>) => {
+export const updateComment = async (id: number, commentData: z.infer<typeof updateCommentSchema>, userId: number) => {
+  const existingComment = await prisma.comment.findUnique({
+    where: { id },
+  });
+
+  if (!existingComment) {
+    throw new Error('Comment not found');
+  }
+
+  if (existingComment.authorId !== userId) {
+    throw new Error('Unauthorized');
+  }
+
   return prisma.comment.update({
     where: { id },
     data: commentData,
     include: {
-      author: true,
+      author: {
+        select: { id: true, name: true },
+      },
+      replies: {
+        include: {
+          author: {
+            select: { id: true, name: true },
+          },
+        },
+      },
     },
   });
 };
@@ -37,15 +58,24 @@ export const deleteComment = async (id: number) => {
 
 export const getCommentsByPostId = async (postId: number) => {
     return prisma.comment.findMany({
-        where: { postId },
+        where: {
+            postId: postId,
+            parentId: null, // 최상위 댓글만 가져오기
+        },
         include: {
-            author: true,
-            post: {
-              select: {
-                title: true,
-              },
+            author: {
+                select: { id: true, name: true },
             },
-        }
+            replies: {
+                include: {
+                    author: {
+                        select: { id: true, name: true },
+                    },
+                },
+                orderBy: { createdAt: 'asc' }, // 답글은 오래된 순서대로
+            },
+        },
+        orderBy: { createdAt: 'desc' }, // 최상위 댓글은 최신 순서대로
     });
 };
 

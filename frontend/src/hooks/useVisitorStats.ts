@@ -1,5 +1,7 @@
+"use client";
+
 import { useState, useEffect, useRef } from 'react';
-import { VisitorStats } from '@/types';
+import { VisitorStats } from '../types'; // Adjusted path
 
 export const useVisitorStats = () => {
   const [stats, setStats] = useState<VisitorStats>({
@@ -22,7 +24,7 @@ export const useVisitorStats = () => {
         }
         const data = await response.json();
         setStats(data);
-      } catch (error) {
+      } catch (error: any) { // Added any for error type
         console.error('Error with visitor stats:', error);
       }
     };

@@ -4,7 +4,7 @@ import { useComments } from '@/contexts/CommentContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 interface CommentFormProps {
   postId: string;
@@ -33,7 +33,7 @@ export default function CommentForm({ postId, parentId, onCommentAdded }: Commen
   if (!isAuthenticated) {
     return (
       <div className="mt-8 text-center">
-        <p>Please <Link to="/profile" className="underline">log in</Link> to write a comment.</p>
+        <p>Please <Link href="/profile" className="underline">log in</Link> to write a comment.</p>
       </div>
     );
   }

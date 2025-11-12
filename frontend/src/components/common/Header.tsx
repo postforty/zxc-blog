@@ -1,40 +1,63 @@
+"use client";
+
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
+import Image from "next/image"; // Added missing import
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Globe, User, Settings, PlusSquare, Menu, X } from "lucide-react";
 import { ModeToggle } from "./mode-toggle";
-import { Button } from "@/components/ui/button";
-import { useTheme } from "@/components/common/theme-provider";
+import { Button } from "../../components/ui/button"; // Adjusted path
+import { useTheme } from "./theme-provider"; // Adjusted path
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import zxcvbLogoLight from "@/assets/zxcvb_logo_light.png";
-import zxcvbLogoDark from "@/assets/zxcvb_logo_dark.png";
-import { useAuth } from "@/contexts/AuthContext";
+} from "../../components/ui/dropdown-menu"; // Adjusted path
+import zxcvbLogoLight from "../../assets/zxcvb_logo_light.png"; // Adjusted path
+import zxcvbLogoDark from "../../assets/zxcvb_logo_dark.png"; // Adjusted path
+import { useAuth } from "../../contexts/AuthContext"; // Adjusted path
+import { usePosts } from "../../contexts/PostContext"; // Adjusted path
 
 export default function Header() {
   const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { setTheme } = useTheme();
   const { user, isLoading } = useAuth();
+  const { refetch } = usePosts();
+  const router = useRouter();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
   };
 
+  const handleLogoClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    router.push("/");
+    await refetch();
+  };
+
   return (
     <header className="py-2 mb-8 border-b">
       <div className="container flex items-center justify-between px-4 mx-auto sm:px-6 lg:px-8">
-        <Link to="/" className="text-2xl font-bold hover:no-underline">
+        <Link
+          href="/"
+          className="text-2xl font-bold hover:no-underline"
+          onClick={handleLogoClick}
+        >
           <div className="flex items-center gap-2">
             <div className="h-6 overflow-hidden sm:h-10">
-              <img
-                src={theme === "dark" ? zxcvbLogoDark : zxcvbLogoLight}
+              <Image
+                src={
+                  (useTheme().theme ?? "light") === "dark"
+                    ? zxcvbLogoDark
+                    : zxcvbLogoLight
+                } // Added nullish coalescing
                 alt="zxcvb blog logo"
                 className="object-cover object-center w-full h-full"
+                width={100}
+                height={40}
               />
             </div>
             <div className="rotate-[-10deg] origin-bottom-left">
@@ -44,14 +67,14 @@ export default function Header() {
         </Link>
         <div className="items-center hidden gap-4 sm:flex">
           <Button asChild variant="ghost">
-            <Link to="/profile">
+            <Link href="/profile">
               <User className="w-4 h-4 mr-2" />
               {t("profile")}
             </Link>
           </Button>
           {!isLoading && user?.role === "Admin" && (
             <Button asChild variant="ghost">
-              <Link to="/admin">
+              <Link href="/admin">
                 <Settings className="w-4 h-4 mr-2" />
                 {t("admin.title")}
               </Link>
@@ -59,7 +82,7 @@ export default function Header() {
           )}
           {!isLoading && user?.role === "Admin" && (
             <Button asChild variant="ghost">
-              <Link to="/editor">
+              <Link href="/editor">
                 <PlusSquare className="w-4 h-4 mr-2" />
                 {t("new_post")}
               </Link>
@@ -106,7 +129,7 @@ export default function Header() {
             <span className="sr-only">Close menu</span>
           </Button>
           <Link
-            to="/profile"
+            href="/profile"
             onClick={() => setIsOpen(false)}
             className="text-2xl"
           >
@@ -114,7 +137,7 @@ export default function Header() {
           </Link>
           {!isLoading && user?.role === "Admin" && (
             <Link
-              to="/admin"
+              href="/admin"
               onClick={() => setIsOpen(false)}
               className="text-2xl"
             >
@@ -123,7 +146,7 @@ export default function Header() {
           )}
           {!isLoading && user?.role === "Admin" && (
             <Link
-              to="/editor"
+              href="/editor"
               onClick={() => setIsOpen(false)}
               className="text-2xl"
             >

@@ -206,6 +206,14 @@ export const getPostById = async (id: number) => {
   });
 };
 
+
+export const incrementViewCount = async (id: number) => {
+  return prisma.post.update({
+    where: { id },
+    data: { viewCount: { increment: 1 } },
+  });
+};
+
 export const getAllTags = async () => {
   return prisma.tag.findMany({
     select: {

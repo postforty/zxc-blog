@@ -1,5 +1,7 @@
+"use client";
+
 import { useTranslation } from 'react-i18next';
-import { useVisitorStats } from '@/hooks/useVisitorStats';
+import { useVisitorStats } from '../../../hooks/useVisitorStats'; // Adjusted path
 
 export default function VisitorCounter() {
   const { t } = useTranslation();

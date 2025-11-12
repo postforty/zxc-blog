@@ -1,4 +1,6 @@
-import VisitorCounter from "@/components/common/analytics/VisitorCounter";
+"use client";
+
+import VisitorCounter from "./analytics/VisitorCounter"; // Adjusted path
 
 export default function Footer() {
   return (

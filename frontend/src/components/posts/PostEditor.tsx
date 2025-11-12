@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { usePosts } from '@/contexts/PostContext';
 import { Post } from '@/types';
@@ -22,7 +22,7 @@ export default function PostEditor({ post }: PostEditorProps) {
   const [currentTagInput, setCurrentTagInput] = useState('');
   const [selectedLangs, setSelectedLangs] = useState(['ko']);
   const { addPost, updatePost } = usePosts();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   useEffect(() => {
     if (post) {
@@ -70,10 +70,10 @@ export default function PostEditor({ post }: PostEditorProps) {
 
     if (post) {
       updatePost({ ...post, ...postData });
-      navigate(`/posts/${post.id}`);
+      router.push(`/posts/${post.id}`);
     } else {
       addPost(postData);
-      navigate(`/`);
+      router.push(`/`);
     }
   };
 

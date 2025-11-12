@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useComments } from "@/contexts/CommentContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -20,9 +21,13 @@ interface CommentItemProps {
 const CommentItem = ({ comment, onReply }: CommentItemProps) => {
   const { t } = useTranslation();
   const { updateComment } = useComments();
+  const { isAuthenticated, user } = useAuth();
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(comment.content);
+
+  const isOwnComment = user?.id === comment.author.id;
+  const isEdited = comment.updatedAt && comment.updatedAt !== comment.createdAt;
 
   const handleUpdate = async () => {
     if (editedContent.trim() !== comment.content) {
@@ -34,11 +39,20 @@ const CommentItem = ({ comment, onReply }: CommentItemProps) => {
   return (
     <div className="flex items-start gap-4">
       <Avatar>
-        <AvatarFallback>{comment.author.name.charAt(0).toUpperCase()}</AvatarFallback>
+        <AvatarFallback>
+          {comment.author.name.charAt(0).toUpperCase()}
+        </AvatarFallback>
       </Avatar>
       <div className="flex-1">
         <p className="font-semibold">{comment.author.name}</p>
-        <p className="text-sm text-muted-foreground mb-2">{new Date(comment.createdAt).toLocaleString()}</p>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+          <span>{new Date(comment.createdAt).toLocaleString()}</span>
+          {isEdited && (
+            <span className="text-xs text-muted-foreground/70">
+              ({t("edited")})
+            </span>
+          )}
+        </div>
         {isEditing ? (
           <div className="space-y-2">
             <Textarea
@@ -47,8 +61,16 @@ const CommentItem = ({ comment, onReply }: CommentItemProps) => {
               rows={3}
             />
             <div className="flex gap-2">
-              <Button size="sm" onClick={handleUpdate}>{t('save')}</Button>
-              <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>{t('cancel')}</Button>
+              <Button size="sm" onClick={handleUpdate}>
+                {t("save")}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setIsEditing(false)}
+              >
+                {t("cancel")}
+              </Button>
             </div>
           </div>
         ) : (
@@ -56,22 +78,40 @@ const CommentItem = ({ comment, onReply }: CommentItemProps) => {
         )}
         {!isEditing && (
           <div className="flex gap-2">
-            <Button variant="link" size="sm" onClick={() => setShowReplyForm(!showReplyForm)} className="pl-0">
-              {t('reply')}
-            </Button>
-            <Button variant="link" size="sm" onClick={() => setIsEditing(true)} className="pl-0">
-              {t('edit')}
-            </Button>
+            {isAuthenticated && (
+              <Button
+                variant="link"
+                size="sm"
+                onClick={() => setShowReplyForm(!showReplyForm)}
+                className="pl-0"
+              >
+                {t("reply")}
+              </Button>
+            )}
+            {isAuthenticated && isOwnComment && (
+              <Button
+                variant="link"
+                size="sm"
+                onClick={() => setIsEditing(true)}
+                className="pl-0"
+              >
+                {t("edit")}
+              </Button>
+            )}
           </div>
         )}
         {showReplyForm && (
           <div className="mt-4 ml-4">
-            <CommentForm postId={comment.postId} parentId={comment.id} onCommentAdded={() => setShowReplyForm(false)} />
+            <CommentForm
+              postId={comment.postId}
+              parentId={comment.id}
+              onCommentAdded={() => setShowReplyForm(false)}
+            />
           </div>
         )}
         {comment.replies && comment.replies.length > 0 && (
           <div className="ml-8 mt-4 space-y-6">
-            {comment.replies.map(reply => (
+            {comment.replies.map((reply) => (
               <CommentItem key={reply.id} comment={reply} onReply={onReply} />
             ))}
           </div>
@@ -81,7 +121,7 @@ const CommentItem = ({ comment, onReply }: CommentItemProps) => {
   );
 };
 
-import { buildCommentTree } from '@/lib/utils';
+import { buildCommentTree } from "@/lib/utils";
 
 // ... (imports)
 
@@ -107,15 +147,19 @@ export default function CommentList({ postId }: CommentListProps) {
 
   return (
     <section className="mt-12">
-      <h3 className="text-2xl font-bold mb-6">{t('comments_heading', { count: comments.length })}</h3>
+      <h3 className="text-2xl font-bold mb-6">
+        {t("comments_heading", { count: comments.length })}
+      </h3>
       <div className="space-y-6">
         {commentTree.map((comment, index) => (
           <div key={comment.id}>
             <CommentItem comment={comment} onReply={() => {}} />
-            {index < commentTree.length - 1 && <Separator className="my-6" />} 
+            {index < commentTree.length - 1 && <Separator className="my-6" />}
           </div>
         ))}
-        {comments.length === 0 && <p className="text-muted-foreground">{t('no_comments_yet')}</p>}
+        {comments.length === 0 && (
+          <p className="text-muted-foreground">{t("no_comments_yet")}</p>
+        )}
       </div>
     </section>
   );

@@ -18,11 +18,17 @@ export const update = async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid comment ID' });
     }
-    // Add logic to check if the user is the author of the comment
-    const updatedComment = await commentService.updateComment(id, req.body);
+    const userId = (req as any).user.id; // Assuming user ID is available in req.user.id after authentication
+    const updatedComment = await commentService.updateComment(id, req.body, userId);
     res.json(updatedComment);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
+    if (error.message === 'Comment not found') {
+      return res.status(404).json({ error: error.message });
+    }
+    if (error.message === 'Unauthorized') {
+      return res.status(403).json({ error: error.message });
+    }
     res.status(500).json({ error: 'Internal server error' });
   }
 };

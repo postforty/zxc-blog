@@ -10,25 +10,27 @@ export const useTags = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const response = await fetch("http://localhost:3001/api/posts/tags");
-        if (!response.ok) {
-          throw new Error("Failed to fetch tags");
-        }
-        const data = await response.json();
-        console.log("tag:", data);
-        setTags(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
+  const fetchTags = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("http://localhost:3001/api/posts/tags");
+      if (!response.ok) {
+        throw new Error("Failed to fetch tags");
       }
-    };
+      const data = await response.json();
+      console.log("tag:", data);
+      setTags(data);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchTags();
   }, []);
 
-  return { tags, isLoading, error };
+  return { tags, isLoading, error, refetch: fetchTags };
 };
