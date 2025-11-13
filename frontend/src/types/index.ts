@@ -15,7 +15,7 @@ export interface Post {
     ko: string;
   };
   likes: number;
-  tags: { id: number; name: string }[];
+  tags: { id: number; name: { ko: string; en: string } }[];
   viewCount: number;
 }
 

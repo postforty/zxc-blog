@@ -54,21 +54,37 @@ passport.use(
           );
         }
 
-        // 기존 사용자 찾기
+        // 1. googleId로 기존 사용자 찾기
         let user = await prisma.user.findUnique({
           where: { googleId: profile.id },
         });
 
-        if (!user) {
-          // 새 사용자 생성
-          user = await prisma.user.create({
-            data: {
-              googleId: profile.id,
-              name: profile.displayName || "Unknown User",
-              email: email,
-            },
-          });
+        if (user) {
+          return done(null, user);
         }
+
+        // 2. 이메일로 기존 사용자 찾기 (일반 회원가입으로 가입한 경우)
+        user = await prisma.user.findUnique({
+          where: { email: email },
+        });
+
+        if (user) {
+          // 기존 계정에 Google ID 연결
+          user = await prisma.user.update({
+            where: { id: user.id },
+            data: { googleId: profile.id },
+          });
+          return done(null, user);
+        }
+
+        // 3. 새 사용자 생성
+        user = await prisma.user.create({
+          data: {
+            googleId: profile.id,
+            name: profile.displayName || "Unknown User",
+            email: email,
+          },
+        });
 
         return done(null, user);
       } catch (error) {

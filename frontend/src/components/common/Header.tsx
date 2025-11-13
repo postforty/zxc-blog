@@ -24,7 +24,7 @@ export default function Header() {
   const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const { setTheme } = useTheme();
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, isAuthenticated } = useAuth();
   const { refetch } = usePosts();
   const router = useRouter();
 
@@ -66,12 +66,24 @@ export default function Header() {
           </div>
         </Link>
         <div className="items-center hidden gap-4 sm:flex">
-          <Button asChild variant="ghost">
-            <Link href="/profile">
-              <User className="w-4 h-4 mr-2" />
-              {t("profile")}
-            </Link>
-          </Button>
+          {!isLoading && !isAuthenticated && (
+            <>
+              <Button asChild variant="ghost">
+                <Link href="/login">로그인</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/register">회원가입</Link>
+              </Button>
+            </>
+          )}
+          {!isLoading && isAuthenticated && (
+            <Button asChild variant="ghost">
+              <Link href="/profile">
+                <User className="w-4 h-4 mr-2" />
+                {t("profile")}
+              </Link>
+            </Button>
+          )}
           {!isLoading && user?.role === "Admin" && (
             <Button asChild variant="ghost">
               <Link href="/admin">
@@ -128,13 +140,33 @@ export default function Header() {
             <X className="w-6 h-6" />
             <span className="sr-only">Close menu</span>
           </Button>
-          <Link
-            href="/profile"
-            onClick={() => setIsOpen(false)}
-            className="text-2xl"
-          >
-            {t("profile")}
-          </Link>
+          {!isLoading && !isAuthenticated && (
+            <>
+              <Link
+                href="/login"
+                onClick={() => setIsOpen(false)}
+                className="text-2xl"
+              >
+                로그인
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setIsOpen(false)}
+                className="text-2xl font-semibold"
+              >
+                회원가입
+              </Link>
+            </>
+          )}
+          {!isLoading && isAuthenticated && (
+            <Link
+              href="/profile"
+              onClick={() => setIsOpen(false)}
+              className="text-2xl"
+            >
+              {t("profile")}
+            </Link>
+          )}
           {!isLoading && user?.role === "Admin" && (
             <Link
               href="/admin"

@@ -1,11 +1,15 @@
-
-import { PrismaClient } from '@prisma/client';
-import type { z } from 'zod';
-import type { createPostSchema, updatePostSchema } from '../../zod/posts.schema.js';
+import { PrismaClient } from "@prisma/client";
+import type { z } from "zod";
+import type {
+  createPostSchema,
+  updatePostSchema,
+} from "../../zod/posts.schema.js";
 
 const prisma = new PrismaClient();
 
-export const createPost = async (postData: z.infer<typeof createPostSchema>) => {
+export const createPost = async (
+  postData: z.infer<typeof createPostSchema>
+) => {
   const { tags, ...restOfPostData } = postData;
 
   return prisma.$transaction(async (prisma) => {
@@ -17,11 +21,11 @@ export const createPost = async (postData: z.infer<typeof createPostSchema>) => 
     });
 
     if (tags && tags.length > 0) {
-      const tagOperations = tags.map(tagName => {
+      const tagOperations = tags.map((tagName) => {
         return prisma.tag.upsert({
-          where: { name: tagName },
+          where: { name: tagName as any },
           update: {},
-          create: { name: tagName },
+          create: { name: tagName as any },
         });
       });
 
@@ -31,7 +35,7 @@ export const createPost = async (postData: z.infer<typeof createPostSchema>) => 
         where: { id: newPost.id },
         data: {
           tags: {
-            connect: createdOrFoundTags.map(tag => ({ id: tag.id })),
+            connect: createdOrFoundTags.map((tag) => ({ id: tag.id })),
           },
         },
       });
@@ -47,7 +51,10 @@ export const createPost = async (postData: z.infer<typeof createPostSchema>) => 
   });
 };
 
-export const updatePost = async (id: number, postData: z.infer<typeof updatePostSchema>) => {
+export const updatePost = async (
+  id: number,
+  postData: z.infer<typeof updatePostSchema>
+) => {
   const { tags, ...restOfPostData } = postData;
 
   return prisma.$transaction(async (prisma) => {
@@ -60,36 +67,41 @@ export const updatePost = async (id: number, postData: z.infer<typeof updatePost
     // Handle tags
     if (tags !== undefined) {
       if (tags.length > 0) {
-        const tagOperations = tags.map(tagName => {
+        const tagOperations = tags.map((tagName) => {
           return prisma.tag.upsert({
-            where: { name: tagName },
+            where: { name: tagName as any },
             update: {},
-            create: { name: tagName },
+            create: { name: tagName as any },
           });
         });
 
         const createdOrFoundTags = await Promise.all(tagOperations);
 
-        console.log('Updating post relations:');
-        console.log('Post ID:', id);
-        console.log('Tags received:', tags);
-        console.log('Created or found tags:', createdOrFoundTags);
+        console.log("Updating post relations:");
+        console.log("Post ID:", id);
+        console.log("Tags received:", tags);
+        console.log("Created or found tags:", createdOrFoundTags);
 
         try {
           await prisma.post.update({
             where: { id },
             data: {
               tags: {
-                set: createdOrFoundTags.map(tag => ({ id: tag.id })),
+                set: createdOrFoundTags.map((tag) => ({ id: tag.id })),
               },
             },
           });
-          console.log('Post tags relation update successful for Post ID:', id);
+          console.log("Post tags relation update successful for Post ID:", id);
         } catch (tagUpdateError) {
-          console.error('Error updating post tags relation for Post ID:', id, tagUpdateError);
+          console.error(
+            "Error updating post tags relation for Post ID:",
+            id,
+            tagUpdateError
+          );
           throw tagUpdateError; // Re-throw to ensure transaction rollback
         }
-      } else { // This is the 'else' for if (tags.length > 0)
+      } else {
+        // This is the 'else' for if (tags.length > 0)
         // If no tags are provided, disconnect all existing tags
         await prisma.post.update({
           where: { id },
@@ -114,7 +126,9 @@ export const updatePost = async (id: number, postData: z.infer<typeof updatePost
         await prisma.tag.delete({
           where: { id: tag.id },
         });
-        console.log(`Deleted orphan tag: ${tag.name} (ID: ${tag.id})`);
+        const tagName =
+          typeof tag.name === "object" ? JSON.stringify(tag.name) : tag.name;
+        console.log(`Deleted orphan tag: ${tagName} (ID: ${tag.id})`);
       }
     }
 
@@ -139,7 +153,7 @@ export const deletePost = async (id: number) => {
     });
 
     if (!postToDelete) {
-      throw new Error('Post not found');
+      throw new Error("Post not found");
     }
 
     // Delete all likes associated with the post
@@ -168,7 +182,9 @@ export const deletePost = async (id: number) => {
         await prisma.tag.delete({
           where: { id: tag.id },
         });
-        console.log(`Deleted orphan tag: ${tag.name} (ID: ${tag.id})`);
+        const tagName =
+          typeof tag.name === "object" ? JSON.stringify(tag.name) : tag.name;
+        console.log(`Deleted orphan tag: ${tagName} (ID: ${tag.id})`);
       }
     }
   });
@@ -181,7 +197,7 @@ export const getAllPosts = async () => {
       tags: true,
     },
     orderBy: {
-      createdAt: 'desc',
+      createdAt: "desc",
     },
   });
 };
@@ -198,14 +214,13 @@ export const getPostById = async (id: number) => {
           replies: {
             include: {
               author: true,
-            }
-          }
-        }
-      }
+            },
+          },
+        },
+      },
     },
   });
 };
-
 
 export const incrementViewCount = async (id: number) => {
   return prisma.post.update({

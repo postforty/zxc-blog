@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { usePosts } from "@/contexts/PostContext";
 import PostListItem from "./PostListItem";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 const POSTS_PER_PAGE = 6;
 
@@ -12,25 +13,37 @@ interface PostListProps {
 
 export default function PostList({ selectedTag, searchQuery }: PostListProps) {
   const { posts, isLoading, error } = usePosts();
+  const { i18n } = useTranslation();
   const [visiblePostsCount, setVisiblePostsCount] = useState(POSTS_PER_PAGE);
+  const lang = i18n.language.startsWith("ko") ? "ko" : "en";
 
   const filteredPosts = useMemo(() => {
     if (posts.length === 0) return [];
-    let filtered = [...posts].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    let filtered = [...posts].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
 
     if (selectedTag) {
-      filtered = filtered.filter(post => post.tags.some(tag => tag.name === selectedTag));
+      filtered = filtered.filter((post) =>
+        post.tags.some((tag) => {
+          const tagName =
+            typeof tag.name === "object" ? tag.name[lang] : tag.name;
+          return tagName === selectedTag;
+        })
+      );
     }
 
     if (searchQuery) {
-      filtered = filtered.filter(post => 
-        post.title.ko.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.title.en.toLowerCase().includes(searchQuery.toLowerCase())
+      filtered = filtered.filter(
+        (post) =>
+          post.title.ko.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          post.title.en.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
     return filtered;
-  }, [posts, selectedTag, searchQuery]);
+  }, [posts, selectedTag, searchQuery, lang]);
 
   useEffect(() => {
     setVisiblePostsCount(POSTS_PER_PAGE);
@@ -39,7 +52,7 @@ export default function PostList({ selectedTag, searchQuery }: PostListProps) {
   const visiblePosts = filteredPosts.slice(0, visiblePostsCount);
 
   const handleLoadMore = () => {
-    setVisiblePostsCount(prevCount => prevCount + POSTS_PER_PAGE);
+    setVisiblePostsCount((prevCount) => prevCount + POSTS_PER_PAGE);
   };
 
   if (isLoading) {

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
@@ -99,13 +101,28 @@ export default function PostView({ post }: PostViewProps) {
       </div>
       {/* Add this section to display tags */}
       <div className="flex flex-wrap gap-2 mb-4">
-        {currentPost.tags?.map((tag) => (
-          <Badge key={tag.id} variant="secondary">
-            {tag.name}
-          </Badge>
-        ))}
+        {currentPost.tags
+          ?.filter((tag) => {
+            const tagName =
+              typeof tag.name === "object" ? tag.name[lang] : tag.name;
+            return tagName && tagName.trim() !== "";
+          })
+          .map((tag) => {
+            const tagName =
+              typeof tag.name === "object" ? tag.name[lang] : tag.name;
+            return (
+              <Badge key={tag.id} variant="secondary">
+                {tagName}
+              </Badge>
+            );
+          })}
       </div>
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeRaw, rehypeSanitize]}
+      >
+        {content}
+      </ReactMarkdown>
       <div className="flex justify-center mt-8">
         <button
           onClick={handleLike}

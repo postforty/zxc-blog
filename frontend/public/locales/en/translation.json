@@ -36,5 +36,8 @@
     "settings": "Settings",
     "goToBlog": "Go to Blog"
   },
-  "loading": "Loading..."
+  "loading": "Loading...",
+  "preview": "Preview",
+  "tags": "Tags",
+  "tags_placeholder": "Enter a tag and press Enter"
 }

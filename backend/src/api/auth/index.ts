@@ -1,13 +1,18 @@
-
-import { Router } from 'express';
-import passport from 'passport';
-import { register, login, refresh, logout, getMe } from './auth.controller.js';
-import { validateRequest } from '../../middleware/validateRequest.js';
-import { registerSchema, loginSchema } from '../../zod/auth.schema.js';
-import { verifyToken } from '../../middleware/verifyToken.js';
+import { Router } from "express";
+import passport from "passport";
+import {
+  register,
+  login,
+  refresh,
+  logout,
+  getMe,
+  googleCallback,
+} from "./auth.controller.js";
+import { validateRequest } from "../../middleware/validateRequest.js";
+import { registerSchema, loginSchema } from "../../zod/auth.schema.js";
+import { verifyToken } from "../../middleware/verifyToken.js";
 
 const router = Router();
-
 
 /**
  * @swagger
@@ -33,7 +38,7 @@ const router = Router();
  *       400:
  *         description: Bad request
  */
-router.post('/register', validateRequest(registerSchema), register);
+router.post("/register", validateRequest(registerSchema), register);
 
 /**
  * @swagger
@@ -53,7 +58,7 @@ router.post('/register', validateRequest(registerSchema), register);
  *       401:
  *         description: Unauthorized
  */
-router.post('/login', validateRequest(loginSchema), login);
+router.post("/login", validateRequest(loginSchema), login);
 
 /**
  * @swagger
@@ -65,7 +70,10 @@ router.post('/login', validateRequest(loginSchema), login);
  *       302:
  *         description: Redirect to Google for authentication
  */
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
 
 /**
  * @swagger
@@ -77,10 +85,16 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
  *       302:
  *         description: Redirect to the frontend application
  */
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-  // Successful authentication, redirect home.
-  res.redirect('/'); // Redirect to your frontend application
-});
+router.get(
+  "/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: `${
+      process.env.FRONTEND_URL || "http://localhost:3000"
+    }/login?error=auth_failed`,
+    session: false,
+  }),
+  googleCallback
+);
 
 /**
  * @swagger
@@ -94,7 +108,7 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
  *       401:
  *         description: Unauthorized
  */
-router.post('/refresh', refresh);
+router.post("/refresh", refresh);
 
 /**
  * @swagger
@@ -106,7 +120,7 @@ router.post('/refresh', refresh);
  *       200:
  *         description: Successfully logged out
  */
-router.post('/logout', logout);
+router.post("/logout", logout);
 
 /**
  * @swagger
@@ -124,7 +138,7 @@ router.post('/logout', logout);
  *       404:
  *         description: User not found
  */
-router.get('/me', verifyToken, getMe);
+router.get("/me", verifyToken, getMe);
 
 /**
  * @swagger
@@ -158,6 +172,5 @@ router.get('/me', verifyToken, getMe);
  *           type: string
  *           format: password
  */
-
 
 export default router;

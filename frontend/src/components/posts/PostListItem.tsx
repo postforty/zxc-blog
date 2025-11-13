@@ -26,17 +26,15 @@ export default function PostListItem({ post }: PostListItemProps) {
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle className="text-2xl font-semibold">
+        <CardTitle className="text-2xl font-semibold flex items-center gap-2">
           <Link href={`/posts/${post.id}`} className="hover:underline">
             {title}
           </Link>
-        </CardTitle>
-        <CardAction>
           <Badge variant="outline" className="flex items-center gap-1">
             <Eye className="h-4 w-4" />
             {post.viewCount}
           </Badge>
-        </CardAction>
+        </CardTitle>
       </CardHeader>
       <CardFooter className="flex-col items-start gap-1.5 text-sm">
         <div className="text-sm text-gray-500">
@@ -45,11 +43,21 @@ export default function PostListItem({ post }: PostListItemProps) {
         </div>
         <div className="flex justify-between w-full">
           <div className="text-muted-foreground">
-            {post.tags?.map((tag) => (
-              <Badge key={tag.id} variant="outline" className="mr-1">
-                {tag.name}
-              </Badge>
-            ))}
+            {post.tags
+              ?.filter((tag) => {
+                const tagName =
+                  typeof tag.name === "object" ? tag.name[lang] : tag.name;
+                return tagName && tagName.trim() !== "";
+              })
+              .map((tag) => {
+                const tagName =
+                  typeof tag.name === "object" ? tag.name[lang] : tag.name;
+                return (
+                  <Badge key={tag.id} variant="outline" className="mr-1">
+                    {tagName}
+                  </Badge>
+                );
+              })}
           </div>
           <div className="flex items-center gap-1 text-muted-foreground">
             <Heart className="h-4 w-4" />

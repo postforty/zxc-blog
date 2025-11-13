@@ -117,3 +117,43 @@ export const getMe = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const googleCallback = async (req: Request, res: Response) => {
+  try {
+    // @ts-ignore
+    const user = req.user;
+
+    if (!user) {
+      return res.redirect(
+        `${
+          process.env.FRONTEND_URL || "http://localhost:3000"
+        }/login?error=auth_failed`
+      );
+    }
+
+    const accessToken = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
+      expiresIn: "1d",
+    });
+    const refreshToken = jwt.sign({ id: user.id }, REFRESH_TOKEN_SECRET, {
+      expiresIn: "7d",
+    });
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { refreshToken },
+    });
+
+    // 프론트엔드로 리다이렉트하면서 토큰 전달
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    res.redirect(
+      `${frontendUrl}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`
+    );
+  } catch (error) {
+    console.error("Google callback error:", error);
+    res.redirect(
+      `${
+        process.env.FRONTEND_URL || "http://localhost:3000"
+      }/login?error=server_error`
+    );
+  }
+};
