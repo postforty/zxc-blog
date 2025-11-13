@@ -10,7 +10,7 @@ import { Providers } from "./providers"; // Import Providers
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ZXC Blog",
+  title: "ZXCVB Blog",
   description: "A modern blog built with Next.js and React 19",
 };
 
