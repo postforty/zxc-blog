@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { Post } from "@/types";
@@ -8,9 +10,12 @@ interface PostNavigationBarProps {
   nextPost?: Post;
 }
 
-export default function PostNavigationBar({ prevPost, nextPost }: PostNavigationBarProps) {
+export default function PostNavigationBar({
+  prevPost,
+  nextPost,
+}: PostNavigationBarProps) {
   const { i18n } = useTranslation();
-  const lang = i18n.language.startsWith('ko') ? 'ko' : 'en';
+  const lang = i18n.language.startsWith("ko") ? "ko" : "en";
 
   return (
     <div className="flex justify-between my-8 gap-4">
@@ -19,7 +24,9 @@ export default function PostNavigationBar({ prevPost, nextPost }: PostNavigation
           <Button variant="outline" className="w-full h-full">
             <div className="truncate">
               <div>다음 글</div>
-              <div className="text-lg font-semibold truncate">{nextPost.title[lang] || nextPost.title.ko}</div>
+              <div className="text-lg font-semibold truncate">
+                {nextPost.title[lang] || nextPost.title.ko}
+              </div>
             </div>
           </Button>
         </Link>
@@ -31,7 +38,9 @@ export default function PostNavigationBar({ prevPost, nextPost }: PostNavigation
           <Button variant="outline" className="w-full h-full">
             <div className="truncate">
               <div>이전 글</div>
-              <div className="text-lg font-semibold truncate">{prevPost.title[lang] || prevPost.title.ko}</div>
+              <div className="text-lg font-semibold truncate">
+                {prevPost.title[lang] || prevPost.title.ko}
+              </div>
             </div>
           </Button>
         </Link>

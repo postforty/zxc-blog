@@ -1,10 +1,12 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useComments } from '@/contexts/CommentContext';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import Link from 'next/link';
+"use client";
+
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useComments } from "@/contexts/CommentContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import Link from "next/link";
 
 interface CommentFormProps {
   postId: string;
@@ -12,9 +14,13 @@ interface CommentFormProps {
   onCommentAdded?: () => void; // 댓글 추가 후 호출될 콜백
 }
 
-export default function CommentForm({ postId, parentId, onCommentAdded }: CommentFormProps) {
+export default function CommentForm({
+  postId,
+  parentId,
+  onCommentAdded,
+}: CommentFormProps) {
   const { t } = useTranslation();
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState("");
   const { addComment } = useComments();
   const { user, isAuthenticated } = useAuth();
 
@@ -24,7 +30,7 @@ export default function CommentForm({ postId, parentId, onCommentAdded }: Commen
 
     await addComment(content, postId, parentId);
 
-    setContent('');
+    setContent("");
     if (onCommentAdded) {
       onCommentAdded();
     }
@@ -33,23 +39,29 @@ export default function CommentForm({ postId, parentId, onCommentAdded }: Commen
   if (!isAuthenticated) {
     return (
       <div className="mt-8 text-center">
-        <p>Please <Link href="/profile" className="underline">log in</Link> to write a comment.</p>
+        <p>
+          Please{" "}
+          <Link href="/profile" className="underline">
+            log in
+          </Link>{" "}
+          to write a comment.
+        </p>
       </div>
     );
   }
 
   return (
     <section className="mt-8">
-      <h3 className="text-xl font-bold mb-4">{t('write_comment')}</h3>
+      <h3 className="text-xl font-bold mb-4">{t("write_comment")}</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
           rows={4}
-          placeholder={t('comment_placeholder')}
+          placeholder={t("comment_placeholder")}
           required
         />
-        <Button type="submit">{t('submit_comment')}</Button>
+        <Button type="submit">{t("submit_comment")}</Button>
       </form>
     </section>
   );
