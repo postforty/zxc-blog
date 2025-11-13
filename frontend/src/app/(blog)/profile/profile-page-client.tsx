@@ -17,6 +17,7 @@ import {
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import { Label } from "../../../components/ui/label";
+import ProfileSkeleton from "../../../components/skeletons/ProfileSkeleton";
 
 const ProfilePageClient = () => {
   const { t } = useTranslation();
@@ -50,7 +51,7 @@ const ProfilePageClient = () => {
   };
 
   if (isLoading) {
-    return <div>{t("loading")}</div>;
+    return <ProfileSkeleton />;
   }
 
   return (

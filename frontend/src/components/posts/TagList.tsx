@@ -1,5 +1,6 @@
 import { useTags } from "@/hooks/useTags";
 import { Badge } from "@/components/ui/badge";
+import TagListSkeleton from "@/components/skeletons/TagListSkeleton";
 import { useTranslation } from "react-i18next";
 
 interface TagListProps {
@@ -13,7 +14,7 @@ export default function TagList({ selectedTag, setSelectedTag }: TagListProps) {
   const lang = i18n.language.startsWith("ko") ? "ko" : "en";
 
   if (isLoading) {
-    return <div>Loading tags...</div>;
+    return <TagListSkeleton />;
   }
 
   if (error) {

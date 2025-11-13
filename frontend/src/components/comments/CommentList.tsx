@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Comment } from "@/types";
 import CommentForm from "./CommentForm";
+import CommentListSkeleton from "@/components/skeletons/CommentListSkeleton";
 
 interface CommentListProps {
   postId: string;
@@ -140,7 +141,7 @@ export default function CommentList({ postId }: CommentListProps) {
   const commentTree = buildCommentTree(comments);
 
   if (isLoading) {
-    return <div>Loading comments...</div>;
+    return <CommentListSkeleton />;
   }
 
   if (error) {

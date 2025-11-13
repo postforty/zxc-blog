@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { usePosts } from "@/contexts/PostContext";
 import PostListItem from "./PostListItem";
+import PostListSkeleton from "@/components/skeletons/PostListSkeleton";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 
@@ -56,7 +57,11 @@ export default function PostList({ selectedTag, searchQuery }: PostListProps) {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <PostListSkeleton />
+      </div>
+    );
   }
 
   if (error) {
