@@ -7,10 +7,56 @@ import type {
 
 const prisma = new PrismaClient();
 
+// Helper function to generate summary from content
+const generateSummary = (content: any, maxLength: number = 200): any => {
+  if (!content) return null;
+
+  const generateTextSummary = (text: string): string => {
+    // Remove markdown syntax
+    const plainText = text
+      .replace(/#{1,6}\s/g, "") // Remove headings
+      .replace(/\*\*(.+?)\*\*/g, "$1") // Remove bold
+      .replace(/\*(.+?)\*/g, "$1") // Remove italic
+      .replace(/\[(.+?)\]\(.+?\)/g, "$1") // Remove links
+      .replace(/`(.+?)`/g, "$1") // Remove inline code
+      .replace(/~~(.+?)~~/g, "$1") // Remove strikethrough
+      .replace(/>\s/g, "") // Remove blockquotes
+      .replace(/[-*+]\s/g, "") // Remove list markers
+      .replace(/\n/g, " ") // Replace newlines with spaces
+      .trim();
+
+    // Truncate to maxLength
+    if (plainText.length <= maxLength) {
+      return plainText;
+    }
+    return plainText.substring(0, maxLength).trim() + "...";
+  };
+
+  // Handle i18n content
+  if (typeof content === "object" && (content.en || content.ko)) {
+    return {
+      en: content.en ? generateTextSummary(content.en) : "",
+      ko: content.ko ? generateTextSummary(content.ko) : "",
+    };
+  }
+
+  // Handle plain string content
+  if (typeof content === "string") {
+    return generateTextSummary(content);
+  }
+
+  return null;
+};
+
 export const createPost = async (
   postData: z.infer<typeof createPostSchema>
 ) => {
   const { tags, ...restOfPostData } = postData;
+
+  // Auto-generate summary if not provided
+  if (!restOfPostData.summary && restOfPostData.content) {
+    restOfPostData.summary = generateSummary(restOfPostData.content);
+  }
 
   return prisma.$transaction(async (prisma) => {
     const newPost = await prisma.post.create({
@@ -56,6 +102,11 @@ export const updatePost = async (
   postData: z.infer<typeof updatePostSchema>
 ) => {
   const { tags, ...restOfPostData } = postData;
+
+  // Auto-generate summary if content is updated but summary is not provided
+  if (restOfPostData.content && !restOfPostData.summary) {
+    restOfPostData.summary = generateSummary(restOfPostData.content);
+  }
 
   return prisma.$transaction(async (prisma) => {
     // Update post data

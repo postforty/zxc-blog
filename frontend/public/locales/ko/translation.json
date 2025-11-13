@@ -39,5 +39,13 @@
   "loading": "로딩 중...",
   "preview": "미리보기",
   "tags": "태그",
-  "tags_placeholder": "태그를 입력하고 Enter를 누르세요"
+  "tags_placeholder": "태그를 입력하고 Enter를 누르세요",
+  "login": "로그인",
+  "register": "회원가입",
+  "profile_title": "프로필",
+  "logout": "로그아웃",
+  "email": "이메일",
+  "password": "비밀번호",
+  "invalid_credentials": "잘못된 인증 정보입니다",
+  "failed_to_login": "로그인에 실패했습니다"
 }

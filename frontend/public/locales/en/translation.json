@@ -39,5 +39,13 @@
   "loading": "Loading...",
   "preview": "Preview",
   "tags": "Tags",
-  "tags_placeholder": "Enter a tag and press Enter"
+  "tags_placeholder": "Enter a tag and press Enter",
+  "login": "Login",
+  "register": "Sign Up",
+  "profile_title": "Profile",
+  "logout": "Logout",
+  "email": "Email",
+  "password": "Password",
+  "invalid_credentials": "Invalid credentials",
+  "failed_to_login": "Failed to login"
 }

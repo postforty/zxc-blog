@@ -69,10 +69,10 @@ export default function Header() {
           {!isLoading && !isAuthenticated && (
             <>
               <Button asChild variant="ghost">
-                <Link href="/login">로그인</Link>
+                <Link href="/login">{t("login")}</Link>
               </Button>
               <Button asChild>
-                <Link href="/register">회원가입</Link>
+                <Link href="/register">{t("register")}</Link>
               </Button>
             </>
           )}
@@ -147,14 +147,14 @@ export default function Header() {
                 onClick={() => setIsOpen(false)}
                 className="text-2xl"
               >
-                로그인
+                {t("login")}
               </Link>
               <Link
                 href="/register"
                 onClick={() => setIsOpen(false)}
                 className="text-2xl font-semibold"
               >
-                회원가입
+                {t("register")}
               </Link>
             </>
           )}

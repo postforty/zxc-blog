@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../contexts/AuthContext";
 import {
   Card,
@@ -18,6 +19,7 @@ import { Button } from "../../../components/ui/button";
 import { Label } from "../../../components/ui/label";
 
 const ProfilePageClient = () => {
+  const { t } = useTranslation();
   const { user, isAuthenticated, login, logout, isLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,22 +42,22 @@ const ProfilePageClient = () => {
         await login(accessToken);
       } else {
         const errorData = await response.json();
-        setError(errorData.error || "Invalid credentials");
+        setError(errorData.error || t("invalid_credentials"));
       }
     } catch (err) {
-      setError("Failed to login");
+      setError(t("failed_to_login"));
     }
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>{t("loading")}</div>;
   }
 
   return (
     <div className="container mx-auto p-4">
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl">Profile</CardTitle>
+          <CardTitle className="text-2xl">{t("profile_title")}</CardTitle>
         </CardHeader>
         <CardContent>
           {isAuthenticated && user ? (
@@ -67,14 +69,14 @@ const ProfilePageClient = () => {
                 <p className="text-xl font-semibold">{user.name}</p>
                 <p className="text-muted-foreground">{user.email}</p>
                 <Button onClick={logout} className="mt-4">
-                  Logout
+                  {t("logout")}
                 </Button>
               </div>
             </div>
           ) : (
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("email")}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -84,7 +86,7 @@ const ProfilePageClient = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t("password")}</Label>
                 <Input
                   id="password"
                   type="password"
@@ -94,7 +96,7 @@ const ProfilePageClient = () => {
                 />
               </div>
               {error && <p className="text-red-500">{error}</p>}
-              <Button type="submit">Login</Button>
+              <Button type="submit">{t("login")}</Button>
             </form>
           )}
         </CardContent>

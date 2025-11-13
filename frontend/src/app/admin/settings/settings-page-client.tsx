@@ -1,10 +1,15 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { Button } from '../../../components/ui/button';
-import { Input } from '../../../components/ui/input';
-import { Label } from '../../../components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
+import { useEffect, useState } from "react";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import { Label } from "../../../components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../../components/ui/card";
 
 interface Settings {
   title: string;
@@ -12,24 +17,30 @@ interface Settings {
 }
 
 const SettingsPageClient = () => {
-  const [settings, setSettings] = useState<Settings>({ title: '', description: '' });
+  const [settings, setSettings] = useState<Settings>({
+    title: "",
+    description: "",
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('/api/admin/settings', {
+        const token = localStorage.getItem("token");
+        const response = await fetch("/api/admin/settings", {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         if (!response.ok) {
-          throw new Error('Failed to fetch settings');
+          throw new Error("Failed to fetch settings");
         }
         const data = await response.json();
-        setSettings(data);
+        setSettings({
+          title: data.title || "",
+          description: data.description || "",
+        });
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -42,23 +53,23 @@ const SettingsPageClient = () => {
 
   const handleSave = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/admin/settings', {
-        method: 'PUT',
+      const token = localStorage.getItem("token");
+      const response = await fetch("/api/admin/settings", {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(settings),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save settings');
+        throw new Error("Failed to save settings");
       }
 
-      alert('Settings saved!');
+      alert("Settings saved!");
     } catch (err: any) {
-      alert('Error saving settings: ' + err.message);
+      alert("Error saving settings: " + err.message);
     }
   };
 
@@ -90,7 +101,7 @@ const SettingsPageClient = () => {
             <Label htmlFor="title">Blog Title</Label>
             <Input
               id="title"
-              value={settings.title}
+              value={settings.title || ""}
               onChange={handleChange}
             />
           </div>
@@ -98,7 +109,7 @@ const SettingsPageClient = () => {
             <Label htmlFor="description">Blog Description</Label>
             <Input
               id="description"
-              value={settings.description}
+              value={settings.description || ""}
               onChange={handleChange}
             />
           </div>
