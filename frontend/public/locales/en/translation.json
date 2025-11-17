@@ -47,5 +47,8 @@
   "email": "Email",
   "password": "Password",
   "invalid_credentials": "Invalid credentials",
-  "failed_to_login": "Failed to login"
+  "failed_to_login": "Failed to login",
+  "invalid_file_type": "Only image files can be uploaded",
+  "file_too_large": "File size cannot exceed 5MB",
+  "upload_failed": "Failed to upload image"
 }

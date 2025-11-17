@@ -1,20 +1,22 @@
+"use client";
+
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
+import { useTranslation } from "react-i18next";
 import { Post } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
 
 interface PostViewServerProps {
   post: Post;
-  lang?: "ko" | "en";
 }
 
-export default function PostViewServer({
-  post,
-  lang = "ko",
-}: PostViewServerProps) {
+export default function PostViewServer({ post }: PostViewServerProps) {
+  const { i18n } = useTranslation();
+  const lang = (i18n.language.startsWith("ko") ? "ko" : "en") as "ko" | "en";
+
   const title = post.title[lang] || post.title.ko || post.title.en;
   const content = post.content[lang] || post.content.ko || post.content.en;
 

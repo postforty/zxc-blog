@@ -14,10 +14,8 @@ interface PostContextType {
   posts: Post[];
   isLoading: boolean;
   error: string | null;
-  addPost: (
-    post: Omit<Post, "id" | "createdAt" | "likes" | "viewCount">
-  ) => void;
-  updatePost: (post: Post) => void;
+  addPost: (post: any) => void; // 타입을 유연하게 변경
+  updatePost: (post: any) => void; // 타입을 유연하게 변경
   deletePost: (id: string) => void;
   addLike: (id: string) => void;
   refetch: () => Promise<void>;
@@ -58,9 +56,7 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
     fetchPosts();
   }, []);
 
-  const addPost = async (
-    post: Omit<Post, "id" | "createdAt" | "likes" | "viewCount">
-  ) => {
+  const addPost = async (post: any) => {
     if (!user) {
       setError("You must be logged in to create a post.");
       return;
@@ -85,26 +81,52 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const updatePost = async (updatedPost: Post) => {
+  const updatePost = async (updatedPost: any) => {
     try {
       const token = localStorage.getItem("token");
+
+      // tags 형태 확인 및 변환
+      let tagsToSend = updatedPost.tags;
+      if (tagsToSend && tagsToSend.length > 0) {
+        // tags가 { id, name } 형태인지 { ko, en } 형태인지 확인
+        if (tagsToSend[0].name) {
+          // { id, name } 형태 -> name만 추출
+          tagsToSend = tagsToSend.map((t: any) => t.name);
+        }
+        // 이미 { ko, en } 형태면 그대로 사용
+      }
+
+      // 백엔드가 기대하는 형태로 데이터 변환
+      const updateData = {
+        title: updatedPost.title,
+        content: updatedPost.content,
+        summary: updatedPost.summary,
+        tags: tagsToSend,
+      };
+
+      console.log("PostContext - Sending update data:", updateData);
+
       const response = await fetch(`/api/posts/${updatedPost.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(updatedPost),
+        body: JSON.stringify(updateData),
       });
       if (!response.ok) {
-        throw new Error("Failed to update post");
+        const errorData = await response.json();
+        console.error("Update post error response:", errorData);
+        throw new Error(`Failed to update post: ${JSON.stringify(errorData)}`);
       }
       const newPost = await response.json();
       setPosts((prevPosts) =>
         prevPosts.map((post) => (post.id === newPost.id ? newPost : post))
       );
     } catch (err: any) {
+      console.error("Update post error:", err);
       setError(err.message);
+      throw err;
     }
   };
 

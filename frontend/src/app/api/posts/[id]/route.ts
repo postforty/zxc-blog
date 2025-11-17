@@ -11,6 +11,12 @@ export async function PUT(
     const body = await request.json();
     const token = request.headers.get("authorization");
 
+    console.log("Frontend API Route - Sending to backend:", {
+      id,
+      body,
+      url: `${BACKEND_URL}/api/posts/${id}`,
+    });
+
     const response = await fetch(`${BACKEND_URL}/api/posts/${id}`, {
       method: "PUT",
       headers: {
@@ -21,14 +27,20 @@ export async function PUT(
     });
 
     if (!response.ok) {
-      throw new Error("Failed to update post");
+      const errorText = await response.text();
+      console.error("Backend error response:", errorText);
+      return NextResponse.json(
+        { error: "Failed to update post", details: errorText },
+        { status: response.status }
+      );
     }
 
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
+    console.error("Frontend API Route error:", error);
     return NextResponse.json(
-      { error: "Failed to update post" },
+      { error: "Failed to update post", details: String(error) },
       { status: 500 }
     );
   }
