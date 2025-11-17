@@ -62,7 +62,14 @@ export const createPost = async (
     const newPost = await prisma.post.create({
       data: restOfPostData,
       include: {
-        author: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+            createdAt: true,
+          },
+        },
       },
     });
 
@@ -90,7 +97,14 @@ export const createPost = async (
     return prisma.post.findUnique({
       where: { id: newPost.id },
       include: {
-        author: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+            createdAt: true,
+          },
+        },
         tags: true,
       },
     });
@@ -186,7 +200,14 @@ export const updatePost = async (
     return prisma.post.findUnique({
       where: { id },
       include: {
-        author: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+            createdAt: true,
+          },
+        },
         tags: true,
       },
     });
@@ -244,7 +265,14 @@ export const deletePost = async (id: number) => {
 export const getAllPosts = async () => {
   return prisma.post.findMany({
     include: {
-      author: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          role: true,
+          createdAt: true,
+        },
+      },
       tags: true,
     },
     orderBy: {
@@ -257,14 +285,35 @@ export const getPostById = async (id: number) => {
   return prisma.post.findUnique({
     where: { id },
     include: {
-      author: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          role: true,
+          createdAt: true,
+        },
+      },
       tags: true,
       comments: {
         include: {
-          author: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              role: true,
+              createdAt: true,
+            },
+          },
           replies: {
             include: {
-              author: true,
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  role: true,
+                  createdAt: true,
+                },
+              },
             },
           },
         },
