@@ -59,7 +59,7 @@
 - [x] **통계 API** (`/api/admin/stats/*`) 구현
   - [x] `summary` (주요 지표 요약)
   - [x] `top-viewed`, `top-liked` (인기 게시물)
-  - [ ] `visitors` (방문자 추이) - _현재 프론트엔드에서 LocalStorage 기반으로 구현되어 있어, 백엔드 구현을 위해서는 별도의 방문자 추적 모델 필요_
+  - [x] `visitors` (방문자 추이)
 
 ## 7. 마무리 (Phase 7: Finalization)
 

@@ -41,7 +41,7 @@ export default function CommentForm({
       <div className="mt-8 text-center">
         <p>
           Please{" "}
-          <Link href="/profile" className="underline">
+          <Link href="/login" className="underline">
             log in
           </Link>{" "}
           to write a comment.
