@@ -22,6 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { GrammarFixDialog } from "./GrammarFixDialog";
 
 interface PostEditorProps {
   post?: Post;
@@ -37,6 +38,12 @@ export default function PostEditor({ post }: PostEditorProps) {
   const [showPreview, setShowPreview] = useState({ ko: false, en: false });
   const [uploading, setUploading] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [grammarDialog, setGrammarDialog] = useState({
+    open: false,
+    original: "",
+    corrected: "",
+    lang: "ko" as "ko" | "en",
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAiGenerate = async (task: AITaskType, lang: "ko" | "en") => {
@@ -71,8 +78,13 @@ export default function PostEditor({ post }: PostEditorProps) {
       } else if (task === "expand") {
         setContent((prev) => ({ ...prev, [lang]: prev[lang] + "\n\n" + result }));
       } else {
-        // Grammar fix
-        setContent((prev) => ({ ...prev, [lang]: result }));
+        // Grammar fix - open dialog
+        setGrammarDialog({
+          open: true,
+          original: currentContent,
+          corrected: result,
+          lang,
+        });
       }
     } catch (error) {
       console.error("AI Generation failed:", error);
@@ -550,6 +562,20 @@ export default function PostEditor({ post }: PostEditorProps) {
       </div>
 
       <Button type="submit">{t("save")}</Button>
+
+      <GrammarFixDialog
+        open={grammarDialog.open}
+        onOpenChange={(open) => setGrammarDialog((prev) => ({ ...prev, open }))}
+        originalText={grammarDialog.original}
+        correctedText={grammarDialog.corrected}
+        onAccept={() => {
+          setContent((prev) => ({
+            ...prev,
+            [grammarDialog.lang]: grammarDialog.corrected,
+          }));
+          setGrammarDialog((prev) => ({ ...prev, open: false }));
+        }}
+      />
     </form>
   );
 }
