@@ -34,12 +34,19 @@ export const generateAIContent = async (options: GenerateOptions): Promise<strin
       break;
 
     case "translate":
-      prompt = `Translate the following text to ${options.targetLanguage === "ko" ? "Korean" : "English"}.
-      Text:
+      prompt = `Translate the following title and content to ${options.targetLanguage === "ko" ? "Korean" : "English"}.
+      
+      Title: "${options.topic}"
+      Content:
       """
       ${options.content}
       """
-      Output only the translated text.`;
+      
+      Output format: JSON
+      {
+        "title": "Translated Title",
+        "content": "Translated Content"
+      }`;
       break;
 
     case "grammar":
@@ -63,7 +70,8 @@ export const generateAIContent = async (options: GenerateOptions): Promise<strin
     });
     const text = response.text || "";
     // Remove markdown code block fences if present
-    return text.replace(/^```markdown\n/, "").replace(/^```\n/, "").replace(/\n```$/, "");
+    const cleanedText = text.replace(/^```markdown\n/, "").replace(/^```json\n/, "").replace(/^```\n/, "").replace(/\n```$/, "");
+    return cleanedText;
   } catch (error) {
     console.error("Gemini API Error:", error);
     throw new Error("Failed to generate content from AI");

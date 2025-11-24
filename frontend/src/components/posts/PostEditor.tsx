@@ -72,7 +72,15 @@ export default function PostEditor({ post }: PostEditorProps) {
 
       if (task === "translate") {
         const targetLang = lang === "ko" ? "en" : "ko";
-        setContent((prev) => ({ ...prev, [targetLang]: result }));
+        try {
+          const parsed = JSON.parse(result);
+          setTitle((prev) => ({ ...prev, [targetLang]: parsed.title || "" }));
+          setContent((prev) => ({ ...prev, [targetLang]: parsed.content || "" }));
+        } catch (e) {
+          console.error("Failed to parse translation JSON:", e);
+          // Fallback: treat entire result as content if parsing fails
+          setContent((prev) => ({ ...prev, [targetLang]: result }));
+        }
       } else if (task === "draft") {
         setContent((prev) => ({ ...prev, [lang]: result }));
       } else if (task === "expand") {
