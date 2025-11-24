@@ -66,3 +66,34 @@
     color: var(--foreground); /* Removed hsl() wrapper */
   }
 }
+
+/* Remove backticks added by Tailwind Typography plugin */
+@layer utilities {
+  .prose code::before,
+  .prose code::after {
+    content: none !important;
+  }
+
+  /* Style inline code blocks only (not inside pre) */
+  .prose :where(code):not(:where([class~="not-prose"] *)):not(pre code) {
+    color: var(--tw-prose-pre-code) !important;
+    background-color: var(--tw-prose-pre-bg) !important;
+    padding: 0.125rem 0.375rem !important;
+    border-radius: 0.25rem !important;
+    font-weight: 500 !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+    border: 1px solid var(--tw-prose-pre-border, hsl(var(--border))) !important;
+  }
+
+  /* Dark mode: Use lighter background for better contrast (inline code only) */
+  .dark .prose :where(code):not(:where([class~="not-prose"] *)):not(pre code) {
+    background-color: hsl(0 0% 25%) !important;
+    color: hsl(0 0% 95%) !important;
+    border: 1px solid hsl(0 0% 35%) !important;
+  }
+
+  /* Dark mode: Code blocks background */
+  .dark .prose :where(pre):not(:where([class~="not-prose"] *)) {
+    background-color: #404040 !important;
+  }
+}

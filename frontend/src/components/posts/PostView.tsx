@@ -30,10 +30,20 @@ export default function PostView({ post }: PostViewProps) {
   const lang = i18n.language.startsWith("ko") ? "ko" : "en";
   const title =
     currentPost.title[lang] || currentPost.title.ko || currentPost.title.en;
-  const content =
+  
+  // HTML 엔티티 디코딩 함수
+  const decodeHtmlEntities = (text: string) => {
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = text;
+    return textarea.value;
+  };
+  
+  const rawContent =
     currentPost.content[lang] ||
     currentPost.content.ko ||
     currentPost.content.en;
+  
+  const content = decodeHtmlEntities(rawContent);
 
   const handleDelete = () => {
     if (window.confirm(t("delete_confirm_message"))) {
@@ -118,8 +128,25 @@ export default function PostView({ post }: PostViewProps) {
           })}
       </div>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeRaw, rehypeSanitize]}
+        skipHtml={false}
+        components={{
+          code: ({ node, inline, className, children, ...props }: any) => {
+            // className이 없으면 인라인 코드
+            if (!className) {
+              return (
+                <code className="px-1.5 py-0.5 rounded bg-muted font-mono" {...props}>
+                  {children}
+                </code>
+              );
+            }
+            // className이 있으면 코드 블록
+            return (
+              <code className={className} {...props}>
+                {children}
+              </code>
+            );
+          },
+        }}
       >
         {content}
       </ReactMarkdown>

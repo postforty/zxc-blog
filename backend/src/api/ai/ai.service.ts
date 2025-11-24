@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+import * as cheerio from "cheerio";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
@@ -10,31 +11,155 @@ interface GenerateOptions {
   content?: string;
   language?: "ko" | "en";
   targetLanguage?: "ko" | "en";
+  contextUrls?: string[];
+  contextFiles?: Express.Multer.File[];
 }
+
+const uploadToGemini = async (file: Express.Multer.File) => {
+  // Use REST API to upload file since we are using @google/genai which might not have the helper yet
+  // or we want to avoid @google/generative-ai dependency.
+  
+  const API_KEY = process.env.GEMINI_API_KEY;
+  const UPLOAD_URL = `https://generativelanguage.googleapis.com/upload/v1beta/files?key=${API_KEY}`;
+  
+  try {
+    // 1. Start Resumable Upload
+    const startResponse = await fetch(UPLOAD_URL, {
+      method: 'POST',
+      headers: {
+        'X-Goog-Upload-Protocol': 'resumable',
+        'X-Goog-Upload-Command': 'start',
+        'X-Goog-Upload-Header-Content-Length': file.size.toString(),
+        'X-Goog-Upload-Header-Content-Type': file.mimetype,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ file: { display_name: file.originalname } }),
+    });
+
+    const uploadUrl = startResponse.headers.get('x-goog-upload-url');
+    if (!uploadUrl) {
+      throw new Error("Failed to get upload URL");
+    }
+
+    // 2. Upload File Content
+    const uploadResponse = await fetch(uploadUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Length': file.size.toString(),
+        'X-Goog-Upload-Offset': '0',
+        'X-Goog-Upload-Command': 'upload, finalize',
+      },
+      body: file.buffer as any,
+    });
+
+    if (!uploadResponse.ok) {
+      throw new Error(`Upload failed: ${uploadResponse.statusText}`);
+    }
+
+    const fileInfo = await uploadResponse.json();
+    const fileUri = fileInfo.file.uri;
+    const fileName = fileInfo.file.name; // This is the resource name, e.g. files/123
+
+    // 3. Wait for processing (if video/audio)
+    let state = "PROCESSING";
+    while (state === "PROCESSING") {
+      const stateResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/${fileName}?key=${API_KEY}`);
+      const stateData = await stateResponse.json();
+      state = stateData.state;
+      if (state === "PROCESSING") {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      } else if (state === "FAILED") {
+        throw new Error("File processing failed");
+      }
+    }
+
+    return { uri: fileUri, mimeType: file.mimetype };
+  } catch (error) {
+    console.error("File upload error:", error);
+    throw error;
+  }
+};
+
+const fetchUrlContent = async (url: string): Promise<string> => {
+  try {
+    const response = await fetch(url);
+    const html = await response.text();
+    const $ = cheerio.load(html);
+    
+    // Remove scripts, styles, and other unnecessary elements
+    $('script').remove();
+    $('style').remove();
+    $('nav').remove();
+    $('footer').remove();
+    $('header').remove();
+    
+    // Extract text from main content areas if possible, or body
+    const content = $('article').text() || $('main').text() || $('body').text();
+    return content.replace(/\s+/g, ' ').trim().substring(0, 10000); // Limit context size
+  } catch (error) {
+    console.error(`Failed to fetch URL ${url}:`, error);
+    return "";
+  }
+};
 
 export const generateAIContent = async (options: GenerateOptions): Promise<string> => {
   let prompt = "";
+  let parts: any[] = [];
+
+  // Handle External Contexts
+  if (options.contextUrls && options.contextUrls.length > 0) {
+    for (const url of options.contextUrls) {
+      if (url.includes("youtube.com") || url.includes("youtu.be")) {
+        // For YouTube, we can pass the URL directly to Gemini 2.0 Flash? 
+        // Actually, the cookbook says we can pass the URL as fileUri if it's a YouTube URL?
+        // Wait, the cookbook example: youtubeUrl = "..." ... { fileData: { fileUri: youtubeUrl } }
+        // This implies we can pass it directly as a fileUri without uploading?
+        // Let's try that as per the user's finding.
+        parts.push({ fileData: { fileUri: url, mimeType: "video/mp4" } }); // Mime type might be ignored or needed?
+        prompt += `\nRefer to the YouTube video at ${url}.\n`;
+      } else {
+        const urlContent = await fetchUrlContent(url);
+        prompt += `\nReference content from ${url}:\n"""\n${urlContent}\n"""\n`;
+      }
+    }
+  }
+
+  if (options.contextFiles && options.contextFiles.length > 0) {
+    for (const file of options.contextFiles) {
+      const uploadedFile = await uploadToGemini(file);
+      parts.push({
+        fileData: {
+          mimeType: uploadedFile.mimeType,
+          fileUri: uploadedFile.uri,
+        },
+      });
+      prompt += `\nRefer to the uploaded file: ${file.originalname}\n`;
+    }
+  }
 
   switch (options.task) {
     case "draft":
-      prompt = `Write a blog post draft about "${options.topic}". 
+      prompt += `Write a blog post draft about "${options.topic}". 
       Language: ${options.language === "ko" ? "Korean" : "English"}.
       Format: Markdown.
-      Structure: Introduction, Main Body (with headers), Conclusion.`;
+      Structure: Introduction, Main Body (with headers), Conclusion.
+      
+      Use the provided context (files, URLs) as reference material.`;
       break;
     
     case "expand":
-      prompt = `Continue writing the following blog post content. 
+      prompt += `Continue writing the following blog post content. 
       Language: ${options.language === "ko" ? "Korean" : "English"}.
       Current content:
       """
       ${options.content}
       """
-      Keep the same tone and style.`;
+      Keep the same tone and style.
+      Use the provided context as reference.`;
       break;
 
     case "translate":
-      prompt = `Translate the following title and content to ${options.targetLanguage === "ko" ? "Korean" : "English"}.
+      prompt += `Translate the following title and content to ${options.targetLanguage === "ko" ? "Korean" : "English"}.
       
       Title: "${options.topic}"
       Content:
@@ -50,7 +175,7 @@ export const generateAIContent = async (options: GenerateOptions): Promise<strin
       break;
 
     case "grammar":
-      prompt = `Fix grammar and improve the style of the following text.
+      prompt += `Fix grammar and improve the style of the following text.
       Language: ${options.language === "ko" ? "Korean" : "English"}.
       Text:
       """
@@ -63,10 +188,12 @@ export const generateAIContent = async (options: GenerateOptions): Promise<strin
       throw new Error("Invalid task type");
   }
 
+  parts.push({ text: prompt });
+
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
-      contents: prompt,
+      contents: [{ role: "user", parts }],
     });
     const text = response.text || "";
     // Remove markdown code block fences if present

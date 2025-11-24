@@ -8,6 +8,8 @@ export interface GenerateOptions {
   content?: string;
   language?: "ko" | "en";
   targetLanguage?: "ko" | "en";
+  contextUrls?: string[];
+  contextFiles?: File[];
 }
 
 export async function generateAIContent(options: GenerateOptions): Promise<string> {
@@ -17,13 +19,39 @@ export async function generateAIContent(options: GenerateOptions): Promise<strin
     throw new Error("Authentication required");
   }
 
+  let body: BodyInit;
+  const headers: HeadersInit = {
+    Authorization: `Bearer ${token}`,
+  };
+
+  if (options.contextFiles && options.contextFiles.length > 0) {
+    const formData = new FormData();
+    formData.append("task", options.task);
+    if (options.topic) formData.append("topic", options.topic);
+    if (options.content) formData.append("content", options.content);
+    if (options.language) formData.append("language", options.language);
+    if (options.targetLanguage) formData.append("targetLanguage", options.targetLanguage);
+    
+    if (options.contextUrls && options.contextUrls.length > 0) {
+      // Send as JSON string or individual fields
+      formData.append("contextUrls", JSON.stringify(options.contextUrls));
+    }
+
+    options.contextFiles.forEach((file) => {
+      formData.append("contextFiles", file);
+    });
+
+    body = formData;
+    // Content-Type header should be omitted for FormData to let browser set boundary
+  } else {
+    headers["Content-Type"] = "application/json";
+    body = JSON.stringify(options);
+  }
+
   const response = await fetch(`${API_URL}/api/ai/generate`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(options),
+    headers,
+    body,
   });
 
   if (!response.ok) {

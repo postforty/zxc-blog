@@ -18,7 +18,20 @@ export default function PostViewServer({ post }: PostViewServerProps) {
   const lang = (i18n.language.startsWith("ko") ? "ko" : "en") as "ko" | "en";
 
   const title = post.title[lang] || post.title.ko || post.title.en;
-  const content = post.content[lang] || post.content.ko || post.content.en;
+  
+  // HTML 엔티티 디코딩 함수
+  const decodeHtmlEntities = (text: string) => {
+    if (typeof window === 'undefined') return text; // SSR 환경에서는 디코딩 스킵
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = text;
+    return textarea.value;
+  };
+  
+  const rawContent = post.content[lang] || post.content.ko || post.content.en;
+  const content = decodeHtmlEntities(rawContent);
+  
+  // 디버깅
+  console.log('Content first 200:', content.substring(0, 200));
 
   return (
     <article className="prose dark:prose-invert max-w-none">
@@ -51,8 +64,26 @@ export default function PostViewServer({ post }: PostViewServerProps) {
           })}
       </div>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeRaw, rehypeSanitize]}
+        skipHtml={false}
+        components={{
+          code: ({ node, inline, className, children, ...props }: any) => {
+            console.log('Code component called:', { inline, className, children });
+            // className이 없으면 인라인 코드 (language-xxx 같은 클래스가 없음)
+            if (!className) {
+              return (
+                <code className="px-1.5 py-0.5 rounded bg-muted font-mono" {...props}>
+                  {children}
+                </code>
+              );
+            }
+            // className이 있으면 코드 블록 (```python 같은 경우)
+            return (
+              <code className={className} {...props}>
+                {children}
+              </code>
+            );
+          },
+        }}
       >
         {content}
       </ReactMarkdown>

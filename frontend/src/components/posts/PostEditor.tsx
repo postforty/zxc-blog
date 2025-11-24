@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { GrammarFixDialog } from "./GrammarFixDialog";
+import { AIContextDialog } from "./AIContextDialog";
 
 interface PostEditorProps {
   post?: Post;
@@ -44,9 +45,14 @@ export default function PostEditor({ post }: PostEditorProps) {
     corrected: "",
     lang: "ko" as "ko" | "en",
   });
+  const [contextDialog, setContextDialog] = useState({
+    open: false,
+    task: "draft" as AITaskType,
+    lang: "ko" as "ko" | "en",
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleAiGenerate = async (task: AITaskType, lang: "ko" | "en") => {
+  const handleAiGenerate = async (task: AITaskType, lang: "ko" | "en", context?: { urls: string[]; files: File[] }) => {
     const currentContent = content[lang];
     const currentTitle = title[lang];
 
@@ -55,8 +61,13 @@ export default function PostEditor({ post }: PostEditorProps) {
       return;
     }
 
-    if ((task === "expand" || task === "translate" || task === "grammar") && !currentContent) {
+    if ((task === "expand" || task === "translate" || task === "grammar") && !currentContent && !context) {
       alert("Content is required");
+      return;
+    }
+
+    if ((task === "draft" || task === "expand") && !context) {
+      setContextDialog({ open: true, task, lang });
       return;
     }
 
@@ -68,6 +79,8 @@ export default function PostEditor({ post }: PostEditorProps) {
         content: currentContent,
         language: lang,
         targetLanguage: task === "translate" ? (lang === "ko" ? "en" : "ko") : undefined,
+        contextUrls: context?.urls,
+        contextFiles: context?.files,
       });
 
       if (task === "translate") {
@@ -99,6 +112,9 @@ export default function PostEditor({ post }: PostEditorProps) {
       alert("AI generation failed");
     } finally {
       setIsAiLoading(false);
+      if (context) {
+        setContextDialog((prev) => ({ ...prev, open: false }));
+      }
     }
   };
   const textareaKoRef = useRef<HTMLTextAreaElement>(null);
@@ -373,8 +389,23 @@ export default function PostEditor({ post }: PostEditorProps) {
               {showPreview.ko ? (
                 <div className="border rounded-md p-4 min-h-[360px] prose prose-sm max-w-none dark:prose-invert">
                   <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                    skipHtml={false}
+                    components={{
+                      code: ({ node, inline, className, children, ...props }: any) => {
+                        if (!className) {
+                          return (
+                            <code className="px-1.5 py-0.5 rounded bg-muted font-mono" {...props}>
+                              {children}
+                            </code>
+                          );
+                        }
+                        return (
+                          <code className={className} {...props}>
+                            {children}
+                          </code>
+                        );
+                      },
+                    }}
                   >
                     {content.ko}
                   </ReactMarkdown>
@@ -476,8 +507,23 @@ export default function PostEditor({ post }: PostEditorProps) {
               {showPreview.en ? (
                 <div className="border rounded-md p-4 min-h-[360px] prose prose-sm max-w-none dark:prose-invert">
                   <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                    skipHtml={false}
+                    components={{
+                      code: ({ node, inline, className, children, ...props }: any) => {
+                        if (!className) {
+                          return (
+                            <code className="px-1.5 py-0.5 rounded bg-muted font-mono" {...props}>
+                              {children}
+                            </code>
+                          );
+                        }
+                        return (
+                          <code className={className} {...props}>
+                            {children}
+                          </code>
+                        );
+                      },
+                    }}
                   >
                     {content.en}
                   </ReactMarkdown>
@@ -583,6 +629,15 @@ export default function PostEditor({ post }: PostEditorProps) {
           }));
           setGrammarDialog((prev) => ({ ...prev, open: false }));
         }}
+      />
+
+      <AIContextDialog
+        open={contextDialog.open}
+        onOpenChange={(open) => setContextDialog((prev) => ({ ...prev, open }))}
+        onGenerate={(context) => handleAiGenerate(contextDialog.task, contextDialog.lang, context)}
+        title={contextDialog.task === "draft" ? t("draft_generation") : t("expand_content")}
+        description={t("ai_context_description") || "Add external context (URLs, Files) to help AI generate better content."}
+        isLoading={isAiLoading}
       />
     </form>
   );
