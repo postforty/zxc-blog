@@ -12,6 +12,7 @@ import allCommentsRouter from "./api/comments/comments.router.js";
 import adminRouter from "./api/admin/index.js";
 import statsRouter from "./api/stats/index.js";
 import uploadsRouter from "./api/uploads/index.js";
+import aiRouter from "./api/ai/index.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -48,6 +49,7 @@ app.use("/api/comments", allCommentsRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/stats", statsRouter);
 app.use("/api/uploads", uploadsRouter);
+app.use("/api/ai", aiRouter);
 
 app.get("/api/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });

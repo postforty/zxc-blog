@@ -14,7 +14,14 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import { uploadImage } from "@/lib/api/uploads";
-import { ImageIcon, Loader2 } from "lucide-react";
+import { generateAIContent, AITaskType } from "@/lib/api/ai";
+import { ImageIcon, Loader2, Sparkles, Wand2, Languages, FileText, PenLine } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface PostEditorProps {
   post?: Post;
@@ -29,7 +36,51 @@ export default function PostEditor({ post }: PostEditorProps) {
   const [selectedLangs, setSelectedLangs] = useState(["ko"]);
   const [showPreview, setShowPreview] = useState({ ko: false, en: false });
   const [uploading, setUploading] = useState(false);
+  const [isAiLoading, setIsAiLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAiGenerate = async (task: AITaskType, lang: "ko" | "en") => {
+    const currentContent = content[lang];
+    const currentTitle = title[lang];
+
+    if (task === "draft" && !currentTitle) {
+      alert("Title is required for draft generation");
+      return;
+    }
+
+    if ((task === "expand" || task === "translate" || task === "grammar") && !currentContent) {
+      alert("Content is required");
+      return;
+    }
+
+    setIsAiLoading(true);
+    try {
+      const result = await generateAIContent({
+        task,
+        topic: currentTitle,
+        content: currentContent,
+        language: lang,
+        targetLanguage: task === "translate" ? (lang === "ko" ? "en" : "ko") : undefined,
+      });
+
+      if (task === "translate") {
+        const targetLang = lang === "ko" ? "en" : "ko";
+        setContent((prev) => ({ ...prev, [targetLang]: result }));
+      } else if (task === "draft") {
+        setContent((prev) => ({ ...prev, [lang]: result }));
+      } else if (task === "expand") {
+        setContent((prev) => ({ ...prev, [lang]: prev[lang] + "\n\n" + result }));
+      } else {
+        // Grammar fix
+        setContent((prev) => ({ ...prev, [lang]: result }));
+      }
+    } catch (error) {
+      console.error("AI Generation failed:", error);
+      alert("AI generation failed");
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
   const textareaKoRef = useRef<HTMLTextAreaElement>(null);
   const textareaEnRef = useRef<HTMLTextAreaElement>(null);
   const { addPost, updatePost } = usePosts();
@@ -271,6 +322,32 @@ export default function PostEditor({ post }: PostEditorProps) {
                   >
                     {showPreview.ko ? t("edit") : t("preview")}
                   </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" disabled={isAiLoading}>
+                        {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                        <span className="ml-2">AI</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onClick={() => handleAiGenerate("draft", "ko")}>
+                        <FileText className="mr-2 h-4 w-4" />
+                        초안 생성
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleAiGenerate("expand", "ko")}>
+                        <PenLine className="mr-2 h-4 w-4" />
+                        내용 확장
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleAiGenerate("translate", "ko")}>
+                        <Languages className="mr-2 h-4 w-4" />
+                        영어로 번역
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleAiGenerate("grammar", "ko")}>
+                        <Wand2 className="mr-2 h-4 w-4" />
+                        문법 교정
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
               {showPreview.ko ? (
@@ -348,6 +425,32 @@ export default function PostEditor({ post }: PostEditorProps) {
                   >
                     {showPreview.en ? t("edit") : t("preview")}
                   </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" disabled={isAiLoading}>
+                        {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                        <span className="ml-2">AI</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onClick={() => handleAiGenerate("draft", "en")}>
+                        <FileText className="mr-2 h-4 w-4" />
+                        Draft Generation
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleAiGenerate("expand", "en")}>
+                        <PenLine className="mr-2 h-4 w-4" />
+                        Expand Text
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleAiGenerate("translate", "en")}>
+                        <Languages className="mr-2 h-4 w-4" />
+                        Translate to Korean
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleAiGenerate("grammar", "en")}>
+                        <Wand2 className="mr-2 h-4 w-4" />
+                        Grammar Fix
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
               {showPreview.en ? (
