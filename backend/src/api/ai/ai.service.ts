@@ -144,6 +144,22 @@ export const generateAIContent = async (options: GenerateOptions): Promise<strin
       Format: Markdown.
       Structure: Introduction, Main Body (with headers), Conclusion.
       
+      IMPORTANT - Use proper heading hierarchy:
+      - Use # for the main title
+      - Use ## for major sections (e.g., ## 1. Introduction, ## 2. Main Topic)
+      - Use ### for subsections (e.g., ### 1-1. Subtopic, ### 1-2. Another Subtopic)
+      - Number your sections appropriately (1., 2., 3. for ##, and 1-1., 1-2. for ###)
+      
+      Example structure:
+      # Title
+      ## 1. Introduction
+      ### 1-1. Background
+      ### 1-2. Purpose
+      ## 2. Main Content
+      ### 2-1. Key Point
+      ### 2-2. Details
+      ## 3. Conclusion
+      
       Use the provided context (files, URLs) as reference material.`;
       break;
     
@@ -155,6 +171,12 @@ export const generateAIContent = async (options: GenerateOptions): Promise<strin
       ${options.content}
       """
       Keep the same tone and style.
+      
+      IMPORTANT - Use proper heading hierarchy when adding new sections:
+      - Use ## for major sections (e.g., ## 1. Section Name, ## 2. Next Section)
+      - Use ### for subsections (e.g., ### 1-1. Subsection, ### 1-2. Details)
+      - Number your sections appropriately to continue from existing content
+      
       Use the provided context as reference.`;
       break;
 
@@ -176,12 +198,18 @@ export const generateAIContent = async (options: GenerateOptions): Promise<strin
 
     case "grammar":
       prompt += `Fix grammar and improve the style of the following text.
-      Language: ${options.language === "ko" ? "Korean" : "English"}.
-      Text:
+      
+      IMPORTANT: The text is in ${options.language === "ko" ? "Korean" : "English"}.
+      You MUST keep the output in the SAME language (${options.language === "ko" ? "Korean" : "English"}).
+      DO NOT translate the text to another language.
+      Only fix grammar, spelling, and improve the writing style while maintaining the original language.
+      
+      Text to correct:
       """
       ${options.content}
       """
-      Output only the corrected text.`;
+      
+      Output only the corrected text in ${options.language === "ko" ? "Korean" : "English"}.`;
       break;
 
     case "outline":
@@ -189,9 +217,23 @@ export const generateAIContent = async (options: GenerateOptions): Promise<strin
       Language: ${options.language === "ko" ? "Korean" : "English"}.
       
       The input is a list of items or questions. For each item:
-      1. Use the item as a header (or sub-header).
+      1. Use the item as a header (or sub-header) with proper markdown heading levels.
       2. Write a detailed explanation or answer for that item.
       3. Maintain a logical flow between items.
+      
+      IMPORTANT - Use proper heading hierarchy:
+      - Use # for the main title
+      - Use ## for major sections (e.g., ## 1. Section Name)
+      - Use ### for subsections (e.g., ### 1-1. Subsection Name)
+      - Number your sections appropriately (1., 2., 3. for ##, and 1-1., 1-2. for ###)
+      
+      Example structure:
+      # Main Title
+      ## 1. First Topic
+      ### 1-1. Subtopic
+      ### 1-2. Another Subtopic
+      ## 2. Second Topic
+      ### 2-1. Details
       
       Input:
       """

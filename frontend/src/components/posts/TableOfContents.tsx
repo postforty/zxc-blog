@@ -68,7 +68,7 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ headings }) =>
               }`}
               onClick={(e) => {
                 e.preventDefault();
-                document.querySelector(`#${heading.id}`)?.scrollIntoView({
+                document.getElementById(heading.id)?.scrollIntoView({
                   behavior: 'smooth',
                 });
               }}

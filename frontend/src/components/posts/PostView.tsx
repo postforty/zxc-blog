@@ -54,9 +54,13 @@ export default function PostView({ post }: PostViewProps) {
 
   useEffect(() => {
     const extractedHeadings: Heading[] = [];
+    
+    // 코드 블록을 제거한 콘텐츠 생성 (``` 로 감싸진 부분 제거)
+    const contentWithoutCodeBlocks = content.replace(/```[\s\S]*?```/g, "");
+    
     const headingRegex = /^(#{1,3})\s+(.+)$/gm;
     let match;
-    while ((match = headingRegex.exec(content)) !== null) {
+    while ((match = headingRegex.exec(contentWithoutCodeBlocks)) !== null) {
       const level = match[1].length;
       const text = match[2].replace(/[*_~`]/g, ""); // Remove basic markdown syntax
       const id = text
@@ -153,6 +157,7 @@ export default function PostView({ post }: PostViewProps) {
             })}
         </div>
         <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
           skipHtml={false}
           components={{
             code: ({ node, inline, className, children, ...props }: any) => {
