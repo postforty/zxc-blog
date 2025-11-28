@@ -29,6 +29,23 @@ async function getPost(id: string): Promise<Post | null> {
   }
 }
 
+async function getAllPosts(): Promise<Post[]> {
+  try {
+    const res = await fetch(`${API_URL}/api/posts`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return [];
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Failed to fetch posts:", error);
+    return [];
+  }
+}
+
 // 조회수 증가 (서버 사이드에서 처리)
 async function incrementViewCount(id: string) {
   try {
@@ -86,9 +103,17 @@ export default async function PostDetailPage({
   // 조회수 증가
   await incrementViewCount(id);
 
-  // TODO: 이전/다음 게시글 로직 구현
-  const prevPost = undefined;
-  const nextPost = undefined;
+  // 이전/다음 게시글 로직 구현
+  const allPosts = await getAllPosts();
+  
+  // 날짜 기준으로 정렬 (최신순)
+  const sortedPosts = allPosts.sort((a, b) => 
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+  
+  const currentIndex = sortedPosts.findIndex(p => p.id === post.id);
+  const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : undefined; // 더 최신 글
+  const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : undefined; // 더 오래된 글
 
   return (
     <div>
