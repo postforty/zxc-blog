@@ -3,7 +3,7 @@ import * as cheerio from "cheerio";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
-export type AITaskType = "draft" | "expand" | "translate" | "grammar";
+export type AITaskType = "draft" | "expand" | "translate" | "grammar" | "outline";
 
 interface GenerateOptions {
   task: AITaskType;
@@ -182,6 +182,23 @@ export const generateAIContent = async (options: GenerateOptions): Promise<strin
       ${options.content}
       """
       Output only the corrected text.`;
+      break;
+
+    case "outline":
+      prompt += `Expand the following outline/keywords into a detailed blog post section.
+      Language: ${options.language === "ko" ? "Korean" : "English"}.
+      
+      The input is a list of items or questions. For each item:
+      1. Use the item as a header (or sub-header).
+      2. Write a detailed explanation or answer for that item.
+      3. Maintain a logical flow between items.
+      
+      Input:
+      """
+      ${options.content}
+      """
+      
+      Format: Markdown.`;
       break;
       
     default:

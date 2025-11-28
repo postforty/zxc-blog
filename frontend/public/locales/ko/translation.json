@@ -50,5 +50,11 @@
   "failed_to_login": "로그인에 실패했습니다",
   "invalid_file_type": "이미지 파일만 업로드할 수 있습니다",
   "file_too_large": "파일 크기는 5MB를 초과할 수 없습니다",
-  "upload_failed": "이미지 업로드에 실패했습니다"
+  "upload_failed": "이미지 업로드에 실패했습니다",
+  "draft_generation": "초안 생성",
+  "expand_content": "내용 확장",
+  "expand_outline": "개요 확장",
+  "draft_desc": "주제와 관련된 내용을 바탕으로 초안을 생성합니다.",
+  "expand_desc": "기존 내용을 바탕으로 내용을 더 풍부하게 확장합니다.",
+  "outline_desc": "키워드나 개요를 바탕으로 상세 내용을 작성합니다."
 }

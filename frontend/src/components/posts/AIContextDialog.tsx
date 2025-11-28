@@ -68,6 +68,7 @@ export function AIContextDialog({
             <Label>External URLs (YouTube, Web Pages)</Label>
             <div className="flex gap-2">
               <Input
+                className="flex-1"
                 placeholder="https://..."
                 value={currentUrl}
                 onChange={(e) => setCurrentUrl(e.target.value)}
@@ -86,9 +87,9 @@ export function AIContextDialog({
               <div className="flex flex-col gap-2 mt-2">
                 {urls.map((url, index) => (
                   <div key={index} className="flex items-center justify-between text-sm bg-muted p-2 rounded-md">
-                    <div className="flex items-center gap-2 overflow-hidden">
+                    <div className="flex items-center gap-2 overflow-hidden flex-1 min-w-0">
                       <LinkIcon className="h-3 w-3 flex-shrink-0" />
-                      <span className="truncate">{url}</span>
+                      <span className="break-all flex-1">{url}</span>
                     </div>
                     <button onClick={() => handleRemoveUrl(index)} className="text-muted-foreground hover:text-foreground">
                       <X className="h-3 w-3" />

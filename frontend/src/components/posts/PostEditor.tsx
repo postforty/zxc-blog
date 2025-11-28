@@ -12,10 +12,9 @@ import { Badge } from "@/components/ui/badge";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
-import rehypeSanitize from "rehype-sanitize";
 import { uploadImage } from "@/lib/api/uploads";
 import { generateAIContent, AITaskType } from "@/lib/api/ai";
-import { ImageIcon, Loader2, Sparkles, Wand2, Languages, FileText, PenLine } from "lucide-react";
+import { ImageIcon, Loader2, Sparkles, Wand2, Languages, FileText, PenLine, ListTree } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -61,12 +60,12 @@ export default function PostEditor({ post }: PostEditorProps) {
       return;
     }
 
-    if ((task === "expand" || task === "translate" || task === "grammar") && !currentContent && !context) {
+    if ((task === "expand" || task === "translate" || task === "grammar" || task === "outline") && !currentContent && !context) {
       alert("Content is required");
       return;
     }
 
-    if ((task === "draft" || task === "expand") && !context) {
+    if ((task === "draft" || task === "expand" || task === "outline") && !context) {
       setContextDialog({ open: true, task, lang });
       return;
     }
@@ -96,7 +95,7 @@ export default function PostEditor({ post }: PostEditorProps) {
         }
       } else if (task === "draft") {
         setContent((prev) => ({ ...prev, [lang]: result }));
-      } else if (task === "expand") {
+      } else if (task === "expand" || task === "outline") {
         setContent((prev) => ({ ...prev, [lang]: prev[lang] + "\n\n" + result }));
       } else {
         // Grammar fix - open dialog
@@ -374,6 +373,10 @@ export default function PostEditor({ post }: PostEditorProps) {
                         <PenLine className="mr-2 h-4 w-4" />
                         내용 확장
                       </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleAiGenerate("outline", "ko")}>
+                        <ListTree className="mr-2 h-4 w-4" />
+                        개요 확장
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleAiGenerate("translate", "ko")}>
                         <Languages className="mr-2 h-4 w-4" />
                         영어로 번역
@@ -491,6 +494,10 @@ export default function PostEditor({ post }: PostEditorProps) {
                       <DropdownMenuItem onClick={() => handleAiGenerate("expand", "en")}>
                         <PenLine className="mr-2 h-4 w-4" />
                         Expand Text
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleAiGenerate("outline", "en")}>
+                        <ListTree className="mr-2 h-4 w-4" />
+                        Expand Outline
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleAiGenerate("translate", "en")}>
                         <Languages className="mr-2 h-4 w-4" />
@@ -631,12 +638,25 @@ export default function PostEditor({ post }: PostEditorProps) {
         }}
       />
 
+
       <AIContextDialog
         open={contextDialog.open}
         onOpenChange={(open) => setContextDialog((prev) => ({ ...prev, open }))}
         onGenerate={(context) => handleAiGenerate(contextDialog.task, contextDialog.lang, context)}
-        title={contextDialog.task === "draft" ? t("draft_generation") : t("expand_content")}
-        description={t("ai_context_description") || "Add external context (URLs, Files) to help AI generate better content."}
+        title={
+          contextDialog.task === "draft"
+            ? t("draft_generation")
+            : contextDialog.task === "outline"
+            ? t("expand_outline")
+            : t("expand_content")
+        }
+        description={
+          contextDialog.task === "draft"
+            ? t("draft_desc")
+            : contextDialog.task === "outline"
+            ? t("outline_desc")
+            : t("expand_desc")
+        }
         isLoading={isAiLoading}
       />
     </form>
